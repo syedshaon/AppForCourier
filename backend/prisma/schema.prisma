@@ -1,0 +1,214 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+// prisma/schema.prisma
+
+generator client {
+  provider = "prisma-client-js"
+  // Add this line to specify the output path
+  // output   = "./node_modules/.prisma/client"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+ 
+enum Role {
+  ADMIN
+  AGENT
+  CUSTOMER
+}
+
+enum ParcelStatus {
+  PENDING
+  ASSIGNED
+  PICKED_UP
+  IN_TRANSIT
+  OUT_FOR_DELIVERY
+  DELIVERED
+  FAILED
+  CANCELLED
+}
+
+enum ParcelSize {
+  SMALL
+  MEDIUM
+  LARGE
+  EXTRA_LARGE
+}
+
+enum ParcelType {
+  DOCUMENT
+  PACKAGE
+  FRAGILE
+  ELECTRONICS
+  CLOTHING
+  FOOD
+  OTHER
+}
+
+enum PaymentType {
+  PREPAID
+  COD
+}
+
+model User {
+  id          String   @id @default(cuid())
+  email       String   @unique
+  password    String
+  firstName   String
+  lastName    String
+  phoneNumber String   @unique
+  address     String?
+  role        Role     @default(CUSTOMER)
+  isActive    Boolean  @default(true)
+  
+  // Email verification fields
+  isEmailVerified      Boolean   @default(false)
+  emailVerifyToken     String?   @unique
+  emailVerifyExpires   DateTime?
+  
+  // Password reset fields  
+  passwordResetToken   String?   @unique
+  passwordResetExpires DateTime?
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relations remain the same...
+  bookedParcels   Parcel[] @relation("CustomerParcels")
+  assignedParcels Parcel[] @relation("AgentParcels")
+  statusUpdates   StatusUpdate[]
+  transactions    Transaction[]
+
+  @@map("users")
+}
+
+model Address {
+  id        String @id @default(cuid())
+  street    String
+  city      String
+  state     String
+  zipCode   String
+  country   String @default("Bangladesh")
+  latitude  Float?
+  longitude Float?
+
+  // Relations
+  pickupParcels   Parcel[] @relation("PickupAddress")
+  deliveryParcels Parcel[] @relation("DeliveryAddress")
+
+  @@map("addresses")
+}
+
+model Parcel {
+  id              String      @id @default(cuid())
+  trackingNumber  String      @unique @default(cuid())
+
+  // Customer info
+  customerId      String
+  customer        User        @relation("CustomerParcels", fields: [customerId], references: [id])
+
+  // Agent info (nullable when unassigned)
+  agentId         String?
+  agent           User?       @relation("AgentParcels", fields: [agentId], references: [id])
+
+  // Address info
+  pickupAddressId   String
+  pickupAddress     Address   @relation("PickupAddress", fields: [pickupAddressId], references: [id])
+  deliveryAddressId String
+  deliveryAddress   Address   @relation("DeliveryAddress", fields: [deliveryAddressId], references: [id])
+
+  // Parcel details
+  parcelSize      ParcelSize
+  parcelType      ParcelType
+  weight          Float?      // in kg
+  description     String?
+
+  // Payment info
+  paymentType     PaymentType
+  codAmount       Float?      // Cash on Delivery amount
+  shippingCost    Float       @default(0)
+
+  // Status & tracking
+  status          ParcelStatus @default(PENDING)
+  qrCode          String?      // QR code for scanning
+
+  // Scheduling
+  pickupDate      DateTime?
+  expectedDelivery DateTime?
+  actualDelivery   DateTime?
+
+  // Timestamps
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+
+  // Relations
+  statusUpdates   StatusUpdate[]
+  notifications   Notification[]
+  transactions    Transaction[]
+
+  @@map("parcels")
+}
+
+model StatusUpdate {
+  id          String       @id @default(cuid())
+  parcelId    String
+  parcel      Parcel       @relation(fields: [parcelId], references: [id], onDelete: Cascade)
+
+  agentId     String?
+  agent       User?        @relation(fields: [agentId], references: [id])
+
+  status      ParcelStatus
+  notes       String?
+  latitude    Float?       // Current location
+  longitude   Float?       // Current location
+  timestamp   DateTime     @default(now())
+
+  @@map("status_updates")
+}
+
+model Notification {
+  id        String   @id @default(cuid())
+  parcelId  String
+  parcel    Parcel   @relation(fields: [parcelId], references: [id], onDelete: Cascade)
+
+  type      String   // EMAIL, SMS, PUSH
+  recipient String   // email or phone
+  subject   String?
+  message   String
+  sent      Boolean  @default(false)
+  sentAt    DateTime?
+
+  createdAt DateTime @default(now())
+
+  @@map("notifications")
+}
+
+model Transaction {
+  id        String       @id @default(cuid())
+  parcelId  String
+  parcel    Parcel       @relation(fields: [parcelId], references: [id], onDelete: Cascade)
+
+  userId    String?
+  user      User?        @relation(fields: [userId], references: [id]) // optional, who handled money (agent/admin)
+
+  type      PaymentType
+  amount    Float
+  createdAt DateTime      @default(now())
+
+  @@map("transactions")
+}
+
+model SystemSettings {
+  id    String @id @default(cuid())
+  key   String @unique
+  value String
+
+  @@map("system_settings")
+}
