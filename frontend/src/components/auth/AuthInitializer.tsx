@@ -1,33 +1,52 @@
 // src/components/auth/AuthInitializer.tsx
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { useAuthStore } from "../../store/authStore";
 import { authApi } from "../../services/api";
 
 const AuthInitializer = () => {
   const { login, logout } = useAuthStore();
+  const initializedRef = useRef(false);
 
   useEffect(() => {
+    // Prevent running multiple times
+    if (initializedRef.current) return;
+    initializedRef.current = true;
+
+    // console.log("AuthInitializer running");
+
     const initializeAuth = async () => {
-      const token = localStorage.getItem("auth-storage");
+      // Check if we have a token in localStorage
+      const storedToken = localStorage.getItem("authToken");
 
-      if (token) {
+      if (storedToken) {
         try {
-          // Verify the token is still valid
+          // Verify the token is still valid by getting user profile
           const response = await authApi.getProfile();
-          const user = response.data.user;
+          // console.log("Profile response:", response.data);
 
-          // Update the store with fresh user data
-          login(user, token);
+          // Extract user data based on your API response structure
+          const userData = response.data.data?.user || response.data.user || response.data;
+          // console.log("Extracted user data:", userData);
+
+          if (userData && userData.id) {
+            // Update the store with fresh user data
+            login(userData, storedToken);
+          } else {
+            console.error("No valid user data in profile response");
+            logout();
+          }
         } catch (error) {
           // Token is invalid, logout
           console.error("Token validation failed:", error);
           logout();
         }
+      } else {
+        console.log("No stored token found");
       }
     };
 
     initializeAuth();
-  }, [login, logout]);
+  }, [login, logout]); // Add dependencies
 
   return null;
 };

@@ -10,20 +10,25 @@ export const api = axios.create({
 
 // Add token to requests
 api.interceptors.request.use((config) => {
-  // Try to get token from auth store first
-  const token = useAuthStore.getState().token;
+  // Try to get token from multiple sources
+  let authToken = null;
 
-  // If not in store, try to get from localStorage
-  let authToken = token;
+  // 1. Try from auth store
+  const tokenFromStore = useAuthStore.getState().token;
+  if (tokenFromStore) {
+    authToken = tokenFromStore;
+  }
+
+  // 2. Try from localStorage (backup)
   if (!authToken) {
-    try {
-      const authStorage = localStorage.getItem("auth-storage");
-      if (authStorage) {
-        const parsedAuth = JSON.parse(authStorage);
-        authToken = parsedAuth.state.token;
+    const tokenFromLocalStorage = localStorage.getItem("authToken");
+    if (tokenFromLocalStorage) {
+      authToken = tokenFromLocalStorage;
+      // Also update the store if token exists in localStorage but not in store
+      if (!useAuthStore.getState().token) {
+        // We need to get user info to populate the store
+        // This will be handled by the AuthInitializer
       }
-    } catch (error) {
-      console.error("Error parsing auth storage:", error);
     }
   }
 
@@ -43,7 +48,7 @@ api.interceptors.response.use(
       originalRequest._retry = true;
 
       try {
-        // Try to refresh the token
+        // Try to refresh the token if you have a refresh token mechanism
         const refreshToken = localStorage.getItem("refreshToken");
         if (refreshToken) {
           const response = await api.post("/auth/refresh", { token: refreshToken });

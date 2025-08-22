@@ -10,19 +10,19 @@ const router = express.Router();
 // Rate limiters
 const authLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 5, // limit each IP to 5 requests per windowMs
+  max: 500, // limit each IP to 5 requests per windowMs
   message: "Too many login attempts, please try again later",
 });
 
 const verificationLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 3, // limit each IP to 3 requests
+  max: 300, // limit each IP to 3 requests
   message: "Too many verification attempts",
 });
 
 const passwordResetLimiter = rateLimit({
   windowMs: 60 * 60 * 1000, // 1 hour
-  max: 3, // limit each IP to 3 requests per hour
+  max: 300, // limit each IP to 3 requests per hour
   message: "Too many password reset attempts",
 });
 
