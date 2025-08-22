@@ -1,5 +1,5 @@
 // src/components/auth/LoginForm.tsx
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { useAuthStore } from "../../store/authStore";
 import { authApi } from "../../services/api";

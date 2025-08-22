@@ -113,7 +113,7 @@ export const login = async (req, res) => {
     // Return user data without sensitive fields
     const { password: _, emailVerifyToken, emailVerifyExpires, passwordResetToken, passwordResetExpires, ...userWithoutSensitiveData } = user;
 
-    console.log("User logged in:", userWithoutSensitiveData);
+    // console.log("User logged in:", userWithoutSensitiveData);
 
     return successResponse(res, "Login successful", { user: userWithoutSensitiveData, token });
   } catch (error) {
