@@ -22,7 +22,7 @@ const errorResponse = (res, message, error = null, statusCode = 500) => {
   return res.status(statusCode).json(response);
 };
 
-const validationErrorResponse = (res, message, errors, statusCode = 422) => {
+const validationErrorResponse = (res, message, errors, statusCode = 400) => {
   const response = {
     success: false,
     message,

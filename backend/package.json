@@ -13,8 +13,14 @@
     "seed": "node prisma/seed.js",
     "test": "cross-env NODE_ENV=test jest --testTimeout=10000",
     "test:auth": "cross-env NODE_ENV=test jest tests/auth.test.js --testTimeout=10000",
+    "test:parcel": "cross-env NODE_ENV=test jest tests/parcel.test.js --testTimeout=15000",
+    "test:utils": "cross-env NODE_ENV=test jest tests/utils.test.js --testTimeout=10000",
+    "test:integration": "cross-env NODE_ENV=test jest tests/integration.test.js --testTimeout=20000",
     "test:watch": "cross-env NODE_ENV=test jest --watch --testTimeout=10000",
-    "test:coverage": "cross-env NODE_ENV=test jest --coverage --testTimeout=10000"
+    "test:coverage": "cross-env NODE_ENV=test jest --coverage --testTimeout=15000",
+    "test:all": "cross-env NODE_ENV=test jest --runInBand --testTimeout=20000",
+    "test:parcel-full": "cross-env NODE_ENV=test jest tests/parcel.test.js tests/utils.test.js tests/integration.test.js --runInBand --testTimeout=20000",
+    "test:clean": "cross-env NODE_ENV=test node scripts/cleanTestData.js"
   },
   "dependencies": {
     "@prisma/client": "^5.22.0",

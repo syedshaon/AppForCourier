@@ -10,7 +10,7 @@ import rateLimit from "express-rate-limit";
 // Import routes
 import authRoutes from "./routes/auth.js";
 // import userRoutes from "./routes/users.js";
-// import parcelRoutes from "./routes/parcels.js";
+import parcelRoutes from "./routes/parcels.js";
 // import agentRoutes from "./routes/agents.js";
 // import adminRoutes from "./routes/admin.js";
 // import addressRoutes from "./routes/addresses.js";
@@ -58,7 +58,7 @@ app.use((req, res, next) => {
 // Routes
 app.use("/api/auth", authRoutes);
 // app.use("/api/users", userRoutes);
-// app.use("/api/parcels", parcelRoutes);
+app.use("/api/parcels", parcelRoutes);
 // app.use("/api/agents", agentRoutes);
 // app.use("/api/admin", adminRoutes);
 // app.use("/api/addresses", addressRoutes);

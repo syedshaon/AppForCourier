@@ -25,6 +25,10 @@ import Pricing from "./components/pages/Pricing";
 import NotFound from "./components/pages/NotFound";
 import ResetPassword from "./components/auth/ResetPassword";
 
+// Parcel components
+import ParcelRoutes from "./components/parcels/ParcelRoutes";
+import TrackParcel from "./components/parcels/TrackParcel";
+
 // Store
 import { useAuthStore } from "./store/authStore";
 import { Loader2 } from "lucide-react";
@@ -130,6 +134,9 @@ function App() {
                 </ProtectedRoute>
               }
             />
+
+            <Route path="/parcels/*" element={<ParcelRoutes />} />
+            <Route path="/track" element={<TrackParcel />} />
 
             {/* Catch all route */}
             <Route path="*" element={<NotFound />} />

@@ -184,7 +184,7 @@ const Profile = () => {
             <div className="grid gap-2 relative">
               <Label htmlFor="currentPassword">Current Password</Label>
               <Input id="currentPassword" name="currentPassword" type={showCurrentPassword ? "text" : "password"} value={passwordFormData.currentPassword} onChange={handlePasswordChange} required />
-              <Button type="button" variant="ghost" size="icon" className="absolute right-0 top-7 h-10 w-10" onClick={() => setShowCurrentPassword(!showCurrentPassword)}>
+              <Button type="button" variant="ghost" size="icon" className="absolute right-0 top-5 h-10 w-10 bg-secondary" onClick={() => setShowCurrentPassword(!showCurrentPassword)}>
                 {showCurrentPassword ? <EyeOff size={16} /> : <Eye size={16} />}
               </Button>
             </div>
@@ -192,7 +192,7 @@ const Profile = () => {
             <div className="grid gap-2 relative">
               <Label htmlFor="newPassword">New Password</Label>
               <Input id="newPassword" name="newPassword" type={showNewPassword ? "text" : "password"} value={passwordFormData.newPassword} onChange={handlePasswordChange} required />
-              <Button type="button" variant="ghost" size="icon" className="absolute right-0 top-7 h-10 w-10" onClick={() => setShowNewPassword(!showNewPassword)}>
+              <Button type="button" variant="ghost" size="icon" className="absolute right-0 top-5 h-10 w-10 bg-secondary" onClick={() => setShowNewPassword(!showNewPassword)}>
                 {showNewPassword ? <EyeOff size={16} /> : <Eye size={16} />}
               </Button>
             </div>
@@ -200,7 +200,7 @@ const Profile = () => {
             <div className="grid gap-2 relative">
               <Label htmlFor="confirmPassword">Confirm New Password</Label>
               <Input id="confirmPassword" name="confirmPassword" type={showConfirmPassword ? "text" : "password"} value={passwordFormData.confirmPassword} onChange={handlePasswordChange} required />
-              <Button type="button" variant="ghost" size="icon" className="absolute right-0 top-7 h-10 w-10" onClick={() => setShowConfirmPassword(!showConfirmPassword)}>
+              <Button type="button" variant="ghost" size="icon" className="absolute right-0 top-5 h-10 w-10 bg-secondary" onClick={() => setShowConfirmPassword(!showConfirmPassword)}>
                 {showConfirmPassword ? <EyeOff size={16} /> : <Eye size={16} />}
               </Button>
             </div>
