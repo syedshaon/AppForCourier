@@ -158,4 +158,5 @@ export const adminApi = {
   updateUser: (id: string, data: any) => api.put(`/admin/users/${id}`, data),
   getStats: () => api.get("/admin/stats"),
   getParcelStats: () => api.get("/admin/parcel-stats"),
+  getAgents: () => api.get("/users/admin/agents"),
 };

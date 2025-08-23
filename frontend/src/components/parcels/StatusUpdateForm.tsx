@@ -3,15 +3,15 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { parcelApi } from "../../services/api";
+import { parcelApi } from "../../services/parcelApi";
 import { toast } from "sonner";
 import { Loader2 } from "lucide-react";
 
 const statusUpdateSchema = z.object({
   status: z.enum(["PENDING", "ASSIGNED", "PICKED_UP", "IN_TRANSIT", "OUT_FOR_DELIVERY", "DELIVERED", "FAILED", "CANCELLED"]),
   notes: z.string().optional(),
-  latitude: z.number().optional(),
-  longitude: z.number().optional(),
+  latitude: z.any().optional(),
+  longitude: z.any().optional(),
 });
 
 type StatusUpdateData = z.infer<typeof statusUpdateSchema>;
@@ -34,10 +34,18 @@ export default function StatusUpdateForm({ parcelId, currentStatus, onStatusUpda
     resolver: zodResolver(statusUpdateSchema),
   });
 
-  const onSubmit = async (data: StatusUpdateData) => {
+  const onSubmit = async (data: any) => {
     setIsLoading(true);
     try {
-      await parcelApi.updateStatus(parcelId, data);
+      // Clean up the data
+      const cleanedData = {
+        status: data.status,
+        notes: data.notes,
+        latitude: data.latitude === "" ? undefined : Number(data.latitude),
+        longitude: data.longitude === "" ? undefined : Number(data.longitude),
+      };
+
+      await parcelApi.updateStatus(parcelId, cleanedData);
       toast.success("Status updated successfully!");
       reset();
       onStatusUpdate();
@@ -67,7 +75,7 @@ export default function StatusUpdateForm({ parcelId, currentStatus, onStatusUpda
 
   if (nextStatusOptions.length === 0) {
     return (
-      <div className="bg-white rounded-lg shadow-md p-6">
+      <div className="border rounded-lg shadow-md p-6">
         <h3 className="text-lg font-semibold mb-2">Status Update</h3>
         <p className="text-sm text-gray-600">No further status updates available.</p>
       </div>
@@ -75,16 +83,18 @@ export default function StatusUpdateForm({ parcelId, currentStatus, onStatusUpda
   }
 
   return (
-    <div className="bg-white rounded-lg shadow-md p-6">
+    <div className="border rounded-lg shadow-md p-6">
       <h3 className="text-lg font-semibold mb-4">Update Status</h3>
 
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
         <div>
           <label className="block text-sm font-medium mb-2">New Status</label>
           <select {...register("status")} className="w-full p-2 border rounded-md" required>
-            <option value="">Select status</option>
+            <option className="bg-secondary" value="">
+              Select status
+            </option>
             {nextStatusOptions.map((status) => (
-              <option key={status} value={status}>
+              <option className="bg-secondary" key={status} value={status}>
                 {status.replace("_", " ")}
               </option>
             ))}

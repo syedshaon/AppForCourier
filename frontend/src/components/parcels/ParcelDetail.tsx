@@ -6,6 +6,7 @@ import { useAuthStore } from "../../store/authStore";
 import { toast } from "sonner";
 import { Package, MapPin, Clock, User, Truck, CheckCircle, AlertCircle, Phone, Mail, Calendar, DollarSign, Weight, QrCode } from "lucide-react";
 import StatusUpdateForm from "./StatusUpdateForm";
+import AgentAssignmentForm from "./AgentAssignmentForm";
 
 interface ParcelDetail {
   id: string;
@@ -385,6 +386,24 @@ export default function ParcelDetail() {
           )}
 
           {/* Status Update Form */}
+          {/* {canUpdateStatus && (user?.role === "ADMIN" || isAssignedAgent) && <StatusUpdateForm parcelId={parcel.id} currentStatus={parcel.status} onStatusUpdate={fetchParcel} />} */}
+
+          {user?.role === "ADMIN" && (
+            <AgentAssignmentForm
+              parcelId={parcel.id}
+              currentAgent={
+                parcel.agent
+                  ? {
+                      id: parcel.agent.id,
+                      firstName: parcel.agent.firstName,
+                      lastName: parcel.agent.lastName,
+                    }
+                  : undefined
+              }
+              onAgentAssigned={fetchParcel}
+            />
+          )}
+
           {canUpdateStatus && (user?.role === "ADMIN" || isAssignedAgent) && <StatusUpdateForm parcelId={parcel.id} currentStatus={parcel.status} onStatusUpdate={fetchParcel} />}
         </div>
       </div>

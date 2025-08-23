@@ -78,11 +78,11 @@ const Header = () => {
                       </Link>
                     </NavigationMenuItem>
                   )}
-                  <NavigationMenuItem>
+                  {/* <NavigationMenuItem>
                     <Link to="/parcels" className="text-sm font-medium transition-colors hover:text-primary">
                       Parcels
                     </Link>
-                  </NavigationMenuItem>
+                  </NavigationMenuItem> */}
                 </>
               )}
             </NavigationMenuList>
@@ -115,8 +115,19 @@ const Header = () => {
                     <Link to="/profile">Profile</Link>
                   </DropdownMenuItem>
                   {user?.role === "CUSTOMER" && (
+                    <>
+                      <DropdownMenuItem asChild>
+                        <Link to="/parcels/my-parcels">My Parcels</Link>
+                      </DropdownMenuItem>
+                      <DropdownMenuItem asChild>
+                        <Link to="/parcels/create">Book Parcel</Link>
+                      </DropdownMenuItem>
+                    </>
+                  )}
+                  <DropdownMenuSeparator />
+                  {user?.role === "ADMIN" && (
                     <DropdownMenuItem asChild>
-                      <Link to="/my-parcels">My Parcels</Link>
+                      <Link to="/parcels/all">All Parcels</Link>
                     </DropdownMenuItem>
                   )}
                   <DropdownMenuSeparator />

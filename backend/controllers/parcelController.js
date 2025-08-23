@@ -58,9 +58,14 @@ export const createParcel = async (req, res) => {
       const qrCode = await QRCode.toDataURL(`${process.env.FRONTEND_URL}/parcels/track/${trackingNumber}`);
 
       // Create expected delivery date (3-5 business days from pickup)
-      const expectedDelivery = new Date();
-      expectedDelivery.setDate(expectedDelivery.getDate() + 4);
-
+      let expectedDelivery;
+      if (pickupDate) {
+        expectedDelivery = new Date(pickupDate);
+        expectedDelivery.setDate(expectedDelivery.getDate() + 4); // +4 days after pickup
+      } else {
+        expectedDelivery = new Date();
+        expectedDelivery.setDate(expectedDelivery.getDate() + 5); // +5 days from today
+      }
       // Create parcel
       const parcel = await tx.parcel.create({
         data: {
@@ -336,7 +341,9 @@ export const getParcelByTracking = async (req, res) => {
 };
 
 // Update parcel status (Agent/Admin)
+// Update parcel status (Agent/Admin)
 export const updateParcelStatus = async (req, res) => {
+  console.log("Update parcel status called");
   try {
     const { id } = req.params;
     const { status, notes, latitude, longitude } = req.body;
@@ -363,7 +370,7 @@ export const updateParcelStatus = async (req, res) => {
       });
     }
 
-    // Add authorization check for agents
+    // Add authorization check for agents - they can only update if assigned
     if (userRole === "AGENT" && parcel.agentId !== agentId) {
       return res.status(403).json({
         success: false,
@@ -371,6 +378,7 @@ export const updateParcelStatus = async (req, res) => {
       });
     }
 
+    // Rest of your update logic...
     // Update parcel status and create status update record
     const updatedParcel = await prisma.$transaction(async (tx) => {
       const updated = await tx.parcel.update({

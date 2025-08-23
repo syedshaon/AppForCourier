@@ -184,9 +184,11 @@ export const parcelSchema = Joi.object({
 // Additional schemas you might need
 export const statusUpdateSchema = Joi.object({
   status: Joi.string().valid("PENDING", "ASSIGNED", "PICKED_UP", "IN_TRANSIT", "OUT_FOR_DELIVERY", "DELIVERED", "FAILED", "CANCELLED").required(),
-  notes: Joi.string().max(500).optional(),
-  latitude: Joi.number().min(-90).max(90).optional(),
-  longitude: Joi.number().min(-180).max(180).optional(),
+
+  notes: Joi.string().max(500).optional().allow("").empty(""),
+
+  latitude: Joi.number().min(-90).max(90).optional().allow(null).empty(""),
+  longitude: Joi.number().min(-180).max(180).optional().allow(null).empty(""),
 });
 
 export const assignAgentSchema = Joi.object({
