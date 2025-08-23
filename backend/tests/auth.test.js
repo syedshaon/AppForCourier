@@ -1,10 +1,11 @@
-// tests/auth.test.js (ES6 version)
+// tests/auth.test.js
 import request from "supertest";
-import { app, server } from "../server.js"; // Your Express app
+import { app, server } from "../server.js";
 import { prisma } from "../utils/prisma.js";
 
 describe("Auth Endpoints", () => {
-  let authToken;
+  let authToken; // access token
+  let refreshToken; // refresh token
   let testUserId;
 
   beforeAll(async () => {
@@ -77,7 +78,10 @@ describe("Auth Endpoints", () => {
     expect(res.statusCode).toEqual(200);
     expect(res.body.success).toEqual(true);
     expect(res.body.data.token).toBeDefined();
+    expect(res.body.data.refreshToken).toBeDefined(); // Make sure this exists
+
     authToken = res.body.data.token;
+    refreshToken = res.body.data.refreshToken; // Store the refresh token
   });
 
   test("POST /api/auth/login - should reject invalid credentials", async () => {
@@ -127,10 +131,17 @@ describe("Auth Endpoints", () => {
   });
 
   test("POST /api/auth/refresh - should refresh token", async () => {
-    const res = await request(app).post("/api/auth/refresh").send({ token: authToken });
+    const res = await request(app).post("/api/auth/refresh").send({
+      token: refreshToken, // Send refresh token, not access token
+    });
 
     expect(res.statusCode).toEqual(200);
     expect(res.body.success).toEqual(true);
     expect(res.body.data.token).toBeDefined();
+    expect(res.body.data.refreshToken).toBeDefined(); // Should get new refresh token
+
+    // Update tokens for subsequent tests if needed
+    authToken = res.body.data.token;
+    refreshToken = res.body.data.refreshToken;
   });
 });

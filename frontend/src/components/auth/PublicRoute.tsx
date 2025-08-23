@@ -10,15 +10,10 @@ interface PublicRouteProps {
 const PublicRoute = ({ children }: PublicRouteProps) => {
   const { isAuthenticated, user } = useAuthStore();
 
-  // If authenticated, redirect to appropriate dashboard
-  if (isAuthenticated && user) {
-    if (user.role === "ADMIN") {
-      return <Navigate to="/admin" replace />;
-    } else if (user.role === "AGENT") {
-      return <Navigate to="/agent" replace />;
-    } else {
-      return <Navigate to="/dashboard" replace />;
-    }
+  if (isAuthenticated) {
+    // Redirect to appropriate dashboard
+    const redirectPath = user?.role === "ADMIN" ? "/admin" : user?.role === "AGENT" ? "/agent" : "/dashboard";
+    return <Navigate to={redirectPath} replace />;
   }
 
   return <>{children}</>;

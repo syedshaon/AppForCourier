@@ -5,7 +5,7 @@ import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 import { Textarea } from "../ui/textarea";
 import { Label } from "../ui/label";
-import { Mail, Phone, MapPin, Clock, Send } from "lucide-react";
+import { Mail, Phone, MapPin, Send } from "lucide-react";
 import { toast } from "sonner";
 import { usePageTitle } from "../../hooks/usePageTitle";
 
@@ -111,19 +111,6 @@ const Contact = () => {
                   <div>
                     <h3 className="font-semibold">Email</h3>
                     <p className="text-muted-foreground">info@ruicourier.com</p>
-                  </div>
-                </div>
-                <div className="flex items-start">
-                  <Clock className="h-6 w-6 text-primary mr-4 mt-1" />
-                  <div>
-                    <h3 className="font-semibold">Business Hours</h3>
-                    <p className="text-muted-foreground">
-                      Monday - Friday: 8:00 AM - 8:00 PM
-                      <br />
-                      Saturday: 9:00 AM - 6:00 PM
-                      <br />
-                      Sunday: 10:00 AM - 4:00 PM
-                    </p>
                   </div>
                 </div>
               </div>

@@ -5,25 +5,31 @@ import { Button } from "../ui/button";
 import { NavigationMenu, NavigationMenuItem, NavigationMenuList } from "../ui/navigation-menu";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "../ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
+import { authApi } from "../../services/api"; // Import the authApi
+import { useState } from "react"; // Add state for loading
+import { toast } from "sonner"; // For notifications
 
 const Header = () => {
-  const { user, isAuthenticated, logout } = useAuthStore();
+  const { user, isAuthenticated, logout, token } = useAuthStore();
   const navigate = useNavigate();
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
 
+  // In your Header component or wherever you handle logout
   const handleLogout = async () => {
+    setIsLoggingOut(true);
+
     try {
-      // Call the logout API
-      await fetch("/api/auth/logout", {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${useAuthStore.getState().token}`,
-        },
-      });
-    } catch (error) {
+      // Try to call the logout API
+      await authApi.logout();
+      toast.success("Logged out successfully");
+    } catch (error: any) {
       console.error("Logout API error:", error);
+      // Even if API call fails, clear local state
+      toast.error(error.response?.data?.message || "Logout completed locally");
     } finally {
       // Always clear local state
       logout();
+      setIsLoggingOut(false);
       navigate("/");
     }
   };

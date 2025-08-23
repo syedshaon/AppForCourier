@@ -9,7 +9,7 @@ import { Input } from "../ui/input";
 import { Label } from "../ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../ui/card";
 import { usePageTitle } from "../../hooks/usePageTitle";
-import { X, ArrowLeft } from "lucide-react";
+import { X, ArrowLeft, Mail } from "lucide-react";
 
 const LoginForm = () => {
   const [email, setEmail] = useState("");
@@ -19,6 +19,8 @@ const LoginForm = () => {
   const [resetEmail, setResetEmail] = useState("");
   const [isResetLoading, setIsResetLoading] = useState(false);
   const [isResetSubmitted, setIsResetSubmitted] = useState(false);
+  const [showResendVerification, setShowResendVerification] = useState(false);
+  const [isResending, setIsResending] = useState(false);
 
   const { login } = useAuthStore();
   const navigate = useNavigate();
@@ -26,13 +28,15 @@ const LoginForm = () => {
   const handleLoginSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
+    setShowResendVerification(false);
 
     try {
       const response = await authApi.login({ email, password });
-      const { user: userData, token } = response.data.data;
 
-      // Save to store and localStorage
-      login(userData, token);
+      const { user: userData, token, refreshToken } = response.data.data;
+
+      // Save both tokens to store
+      login(userData, token, refreshToken);
       toast.success("Login successful! Welcome back to Rui Courier!");
 
       // Redirect based on user role
@@ -44,11 +48,40 @@ const LoginForm = () => {
         navigate("/dashboard");
       }
     } catch (error: any) {
-      console.error("Login error:", error);
+      console.error("Login error details:", {
+        status: error.response?.status,
+        message: error.response?.data?.message,
+        data: error.response?.data,
+        error: error.message,
+      });
+
       const message = error.response?.data?.message || "An error occurred during login!";
-      toast.error(message);
+
+      // Check if the error is due to unverified email
+      if (error.response?.data?.message?.includes("verify your email") || error.response?.data?.message?.includes("email verified") || error.response?.data?.message?.includes("email verification")) {
+        setShowResendVerification(true);
+        toast.error("Please verify your email address before logging in.");
+      } else {
+        toast.error(message);
+      }
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const handleResendVerification = async () => {
+    setIsResending(true);
+
+    try {
+      await authApi.resendVerification({ email });
+      toast.success("Verification email sent! Please check your inbox.");
+      setShowResendVerification(false);
+    } catch (error: any) {
+      console.error("Resend verification error:", error);
+      const message = error.response?.data?.message || "Failed to send verification email";
+      toast.error(message);
+    } finally {
+      setIsResending(false);
     }
   };
 
@@ -72,12 +105,14 @@ const LoginForm = () => {
   const resetPasswordMode = () => {
     setIsResetMode(true);
     setResetEmail(email); // Pre-fill with the email from login form
+    setShowResendVerification(false); // Hide resend verification when switching to reset mode
   };
 
   const backToLogin = () => {
     setIsResetMode(false);
     setIsResetSubmitted(false);
     setResetEmail("");
+    setShowResendVerification(false);
   };
 
   usePageTitle(isResetMode ? "Reset Password" : "Login");
@@ -163,6 +198,22 @@ const LoginForm = () => {
             <Button type="submit" className="w-full" disabled={isLoading}>
               {isLoading ? "Logging in..." : "Login"}
             </Button>
+
+            {/* Resend verification section */}
+            {showResendVerification && (
+              <div className="mt-4 p-3 bg-amber-50 border border-amber-200 rounded-md">
+                <div className="flex items-start gap-2">
+                  <Mail className="h-5 w-5 text-amber-600 mt-0.5 flex-shrink-0" />
+                  <div className="flex-1">
+                    <p className="text-sm font-medium text-amber-800">Verify your email address</p>
+                    <p className="text-xs text-amber-700 mt-1">Your account needs to be verified before you can login.</p>
+                    <Button type="button" variant="outline" size="sm" className="mt-2 text-amber-700 border-amber-300 hover:border-amber-800 hover:border cursor-pointer hover:text-amber-800" onClick={handleResendVerification} disabled={isResending}>
+                      {isResending ? "Sending..." : "Resend Verification Email"}
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            )}
           </form>
           <div className="mt-4 text-center text-sm">
             Don&apos;t have an account?{" "}
