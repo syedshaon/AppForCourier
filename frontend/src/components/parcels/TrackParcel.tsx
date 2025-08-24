@@ -1,9 +1,10 @@
 // src/components/parcels/TrackParcel.tsx
 import { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
-import { parcelApi } from "../../services/parcelApi";
+import { parcelApi } from "../../services/api";
 import { toast } from "sonner";
 import { Search, MapPin, Clock, CheckCircle, Truck } from "lucide-react";
+import { LoadScript, GoogleMap, Marker } from "@react-google-maps/api";
 
 interface TrackingInfo {
   trackingNumber: string;
@@ -26,6 +27,28 @@ export default function TrackParcel() {
   const [trackingNumber, setTrackingNumber] = useState(trackingNumberFromUrl || "");
   const [isLoading, setIsLoading] = useState(false);
   const [trackingInfo, setTrackingInfo] = useState<TrackingInfo | null>(null);
+
+  // Get the latest status update
+  const latestUpdate = trackingInfo?.statusHistory[0]; // Assuming statusHistory is sorted with latest first
+
+  // Check if the latest update has location info
+  const hasLocation = latestUpdate?.latitude && latestUpdate?.longitude;
+
+  // Map configuration
+  const mapContainerStyle = {
+    width: "100%",
+    height: "200px",
+  };
+
+  const center = hasLocation
+    ? {
+        lat: latestUpdate.latitude ?? 0,
+        lng: latestUpdate.longitude ?? 0,
+      }
+    : {
+        lat: 0,
+        lng: 0,
+      };
 
   // Fetch tracking info when component mounts with tracking number from URL
   useEffect(() => {
@@ -109,6 +132,27 @@ export default function TrackParcel() {
             </div>
           </div>
 
+          {/* Current Location Map - Only show if latest update has location */}
+          {hasLocation && (
+            <div className="mb-6">
+              <h3 className="text-lg font-semibold mb-3">Current Location</h3>
+              <div className="border rounded-lg overflow-hidden">
+                <LoadScript googleMapsApiKey={import.meta.env.VITE_GOOGLE_MAPS_API_KEY}>
+                  <GoogleMap mapContainerStyle={mapContainerStyle} center={center} zoom={12}>
+                    <Marker position={center} />
+                  </GoogleMap>
+                </LoadScript>
+                <div className="p-3 bg-gray-50 text-sm">
+                  <p className="text-gray-600">Last updated: {new Date(latestUpdate.timestamp).toLocaleString()}</p>
+                  <p className="text-gray-500 text-xs">
+                    Coordinates: {latestUpdate.latitude?.toFixed(6)}, {latestUpdate.longitude?.toFixed(6)}
+                  </p>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Status History */}
           <h3 className="text-lg font-semibold mb-4">Status History</h3>
           <div className="space-y-4">
             {trackingInfo.statusHistory.map((update, index) => (
@@ -118,6 +162,11 @@ export default function TrackParcel() {
                   <p className="font-semibold capitalize">{update.status.toLowerCase().replace("_", " ")}</p>
                   <p className="text-sm text-gray-600">{update.notes}</p>
                   <p className="text-xs text-gray-500">{new Date(update.timestamp).toLocaleString()}</p>
+                  {update.latitude && update.longitude && (
+                    <p className="text-xs text-gray-500 mt-1">
+                      Location: {update.latitude.toFixed(6)}, {update.longitude.toFixed(6)}
+                    </p>
+                  )}
                 </div>
               </div>
             ))}

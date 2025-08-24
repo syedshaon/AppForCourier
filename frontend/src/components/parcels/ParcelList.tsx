@@ -1,6 +1,6 @@
 // src/components/parcels/ParcelList.tsx
 import { useState, useEffect } from "react";
-import { parcelApi } from "../../services/parcelApi";
+import { parcelApi } from "../../services/api";
 import { useAuthStore } from "../../store/authStore";
 import { toast } from "sonner";
 import { Package, Search, Filter, Eye } from "lucide-react";

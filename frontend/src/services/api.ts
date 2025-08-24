@@ -127,15 +127,30 @@ export const authApi = {
 };
 
 // Parcel API calls (based on your Prisma schema)
+// export const parcelApi = {
+//   getAll: () => api.get("/parcels"),
+//   getById: (id: string) => api.get(`/parcels/${id}`),
+//   create: (data: any) => api.post("/parcels", data),
+//   update: (id: string, data: any) => api.put(`/parcels/${id}`, data),
+//   delete: (id: string) => api.delete(`/parcels/${id}`),
+//   getMyParcels: () => api.get("/parcels/my-parcels"),
+//   getAssignedParcels: () => api.get("/parcels/assigned"),
+//   updateStatus: (id: string, data: { status: string; notes?: string; latitude?: number; longitude?: number }) => api.post(`/parcels/${id}/status`, data),
+// };
+
 export const parcelApi = {
-  getAll: () => api.get("/parcels"),
+  createParcel: (data: any) => api.post("/parcels", data),
+  getUserParcels: (params?: any) => api.get("/parcels/my-parcels", { params }),
+  getAgentParcels: (params?: any) => api.get("/parcels/assigned", { params }),
+  getAllParcels: (params?: any) => api.get("/parcels", { params }),
   getById: (id: string) => api.get(`/parcels/${id}`),
-  create: (data: any) => api.post("/parcels", data),
-  update: (id: string, data: any) => api.put(`/parcels/${id}`, data),
-  delete: (id: string) => api.delete(`/parcels/${id}`),
-  getMyParcels: () => api.get("/parcels/my-parcels"),
-  getAssignedParcels: () => api.get("/parcels/assigned"),
-  updateStatus: (id: string, data: { status: string; notes?: string; latitude?: number; longitude?: number }) => api.post(`/parcels/${id}/status`, data),
+  getParcelById: (id: string) => api.get(`/parcels/${id}`),
+  trackParcel: (trackingNumber: string) => api.get(`/parcels/track/${trackingNumber}`),
+  updateStatus: (parcelId: string, data: any) => api.patch(`/parcels/${parcelId}/status`, data),
+
+  assignAgent: (parcelId: string, data: { agentId: string }) => api.patch(`/parcels/${parcelId}/assign`, data),
+  deleteParcel: (id: string) => api.delete(`/parcels/${id}`),
+  searchParcels: (params: any) => api.get("/parcels/search", { params }),
 };
 
 // Address API calls

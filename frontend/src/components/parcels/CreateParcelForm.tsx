@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { parcelApi } from "../../services/parcelApi";
+import { parcelApi } from "../../services/api";
 import { useAuthStore } from "../../store/authStore";
 import { toast } from "sonner";
 import { Loader2, MapPin, Package, Weight, Calendar } from "lucide-react";

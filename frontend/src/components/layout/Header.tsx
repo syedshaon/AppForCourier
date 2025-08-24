@@ -122,13 +122,22 @@ const Header = () => {
                       <DropdownMenuItem asChild>
                         <Link to="/parcels/create">Book Parcel</Link>
                       </DropdownMenuItem>
+                      <DropdownMenuSeparator />
                     </>
                   )}
-                  <DropdownMenuSeparator />
+
                   {user?.role === "ADMIN" && (
                     <DropdownMenuItem asChild>
                       <Link to="/parcels/all">All Parcels</Link>
                     </DropdownMenuItem>
+                  )}
+                  {user?.role === "AGENT" && (
+                    <>
+                      <DropdownMenuSeparator />
+                      <DropdownMenuItem asChild>
+                        <Link to="/parcels/assigned">Assigned Parcels</Link>
+                      </DropdownMenuItem>
+                    </>
                   )}
                   <DropdownMenuSeparator />
                   <DropdownMenuItem onClick={handleLogout}>Log out</DropdownMenuItem>

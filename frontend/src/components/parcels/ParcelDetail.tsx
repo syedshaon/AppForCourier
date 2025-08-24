@@ -4,9 +4,11 @@ import { useParams } from "react-router-dom";
 import { parcelApi } from "../../services/api";
 import { useAuthStore } from "../../store/authStore";
 import { toast } from "sonner";
-import { Package, MapPin, Clock, User, Truck, CheckCircle, AlertCircle, Phone, Mail, Calendar, DollarSign, Weight, QrCode } from "lucide-react";
+import { Package, MapPin, Clock, User, Truck, CheckCircle, AlertCircle, Phone, Mail, Calendar, DollarSign, Weight, QrCode, Navigation } from "lucide-react";
 import StatusUpdateForm from "./StatusUpdateForm";
 import AgentAssignmentForm from "./AgentAssignmentForm";
+import DirectionsModal from "./DirectionsModal";
+import { Link, useNavigate } from "react-router-dom";
 
 interface ParcelDetail {
   id: string;
@@ -70,6 +72,7 @@ export default function ParcelDetail() {
   const { id } = useParams<{ id: string }>();
   const [parcel, setParcel] = useState<ParcelDetail | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [showDirectionsModal, setShowDirectionsModal] = useState(false);
   const { user } = useAuthStore();
 
   useEffect(() => {
@@ -142,6 +145,7 @@ export default function ParcelDetail() {
 
   const canUpdateStatus = user?.role === "AGENT" || user?.role === "ADMIN";
   const isAssignedAgent = user?.role === "AGENT" && parcel.agent?.id === user.id;
+  const showDirectionIcon = canUpdateStatus && (user?.role === "ADMIN" || isAssignedAgent);
 
   return (
     <div className="max-w-6xl mx-auto p-6 space-y-6">
@@ -167,7 +171,7 @@ export default function ParcelDetail() {
         {/* Left Column - Parcel Info */}
         <div className="lg:col-span-2 space-y-6">
           {/* Address Information */}
-          <div className="border  rounded-lg shadow-md p-6">
+          <div className="border rounded-lg shadow-md p-6">
             <h2 className="text-xl font-semibold mb-4 flex items-center gap-2">
               <MapPin className="w-5 h-5" />
               Address Information
@@ -188,15 +192,23 @@ export default function ParcelDetail() {
               </div>
 
               <div>
-                <h3 className="font-medium text-gray-700 mb-2">Delivery Address</h3>
-                <div className="text-sm">
-                  <p>{parcel.deliveryAddress.street}</p>
-                  <p>
-                    {parcel.deliveryAddress.city}, {parcel.deliveryAddress.state}
-                  </p>
-                  <p>
-                    {parcel.deliveryAddress.zipCode}, {parcel.deliveryAddress.country}
-                  </p>
+                <h3 className="font-medium text-gray-700">Delivery Address</h3>
+
+                <div className="flex items-center justify-start mb-2">
+                  <div className="text-sm">
+                    <p>{parcel.deliveryAddress.street}</p>
+                    <p>
+                      {parcel.deliveryAddress.city}, {parcel.deliveryAddress.state}
+                    </p>
+                    <p>
+                      {parcel.deliveryAddress.zipCode}, {parcel.deliveryAddress.country}
+                    </p>
+                  </div>
+                  {showDirectionIcon && (
+                    <button onClick={() => setShowDirectionsModal(true)} className="p-1 ml-4 text-blue-600 hover:text-blue-800 transition-colors" title="Get directions">
+                      <Navigation className="w-10 h-10" />
+                    </button>
+                  )}
                 </div>
               </div>
             </div>
@@ -372,16 +384,18 @@ export default function ParcelDetail() {
           {/* QR Code */}
           {parcel.qrCode && (
             <div className="border  rounded-lg shadow-md p-6">
-              <h2 className="text-xl font-semibold mb-4 flex items-center gap-2">
+              {/* <h2 className="text-xl font-semibold mb-4 flex items-center gap-2">
                 <QrCode className="w-5 h-5" />
                 QR Code
-              </h2>
+              </h2> */}
 
-              <div className="flex justify-center">
-                <img src={parcel.qrCode} alt={`QR Code for ${parcel.trackingNumber}`} className="w-32 h-32" />
-              </div>
+              <Link to={`/parcels/track/${parcel.trackingNumber}`} target="_blank" rel="noopener noreferrer">
+                <div className="flex justify-center">
+                  <img src={parcel.qrCode} alt={`QR Code for ${parcel.trackingNumber}`} className="w-32 h-32" />
+                </div>
 
-              <p className="text-center text-sm text-gray-600 mt-2">Scan to track this parcel</p>
+                <p className="text-center text-lg   mt-2">Click or Scan to track this parcel</p>
+              </Link>
             </div>
           )}
 
@@ -407,6 +421,8 @@ export default function ParcelDetail() {
           {canUpdateStatus && (user?.role === "ADMIN" || isAssignedAgent) && <StatusUpdateForm parcelId={parcel.id} currentStatus={parcel.status} onStatusUpdate={fetchParcel} />}
         </div>
       </div>
+      {/* Directions Modal */}
+      {showDirectionsModal && <DirectionsModal deliveryAddress={parcel.deliveryAddress} isOpen={showDirectionsModal} onClose={() => setShowDirectionsModal(false)} />}
     </div>
   );
 }
