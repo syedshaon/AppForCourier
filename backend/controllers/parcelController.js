@@ -403,6 +403,8 @@ export const updateParcelStatus = async (req, res) => {
               email: true,
             },
           },
+          pickupAddress: true,
+          deliveryAddress: true,
         },
       });
 
@@ -434,6 +436,8 @@ export const updateParcelStatus = async (req, res) => {
       status,
       notes,
       timestamp: new Date(),
+      latitude: latitude ? parseFloat(latitude) : null,
+      longitude: longitude ? parseFloat(longitude) : null,
     });
 
     res.json({
@@ -613,8 +617,10 @@ export const assignAgent = async (req, res) => {
           status: "ASSIGNED",
         },
         include: {
-          customer: { select: { firstName: true, lastName: true } },
+          customer: { select: { firstName: true, lastName: true, email: true } },
           agent: { select: { firstName: true, lastName: true } },
+          pickupAddress: true,
+          deliveryAddress: true,
         },
       });
 

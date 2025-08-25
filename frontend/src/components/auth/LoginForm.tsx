@@ -119,7 +119,7 @@ const LoginForm = () => {
 
   if (isResetMode) {
     return (
-      <div className="flex items-center justify-center min-h-screen bg-muted">
+      <div className="flex items-center justify-center min-h-[70vh] bg-muted">
         <Card className="mx-auto max-w-md w-full py-8 relative">
           <Button variant="ghost" size="icon" className="absolute top-4 right-4 h-8 w-8" onClick={backToLogin}>
             <X className="h-4 w-4" />
@@ -174,7 +174,7 @@ const LoginForm = () => {
   }
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-muted">
+    <div className="flex items-center justify-center min-h-[70vh] bg-muted">
       <Card className="mx-auto max-w-sm w-full py-8">
         <CardHeader>
           <CardTitle className="text-2xl">Login</CardTitle>

@@ -4,7 +4,7 @@ import { Plus } from "lucide-react";
 
 function CustomerDashboard() {
   return (
-    <div className="min-h-screen border p-6">
+    <div className="min-h-[70vh] border p-6">
       <div className="max-w-6xl mx-auto">
         <div className="flex justify-between items-center mb-8">
           <h1 className="text-3xl font-bold  ">My Parcels</h1>

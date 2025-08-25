@@ -76,7 +76,7 @@ const ResetPassword = () => {
 
   if (status === "success") {
     return (
-      <div className="flex items-center justify-center min-h-screen bg-muted">
+      <div className="flex items-center justify-center min-h-[70vh] bg-muted">
         <Card className="mx-auto max-w-md w-full py-8">
           <CardHeader className="text-center">
             <CardTitle className="text-2xl">Password Reset Successful!</CardTitle>
@@ -99,7 +99,7 @@ const ResetPassword = () => {
 
   if (status === "error") {
     return (
-      <div className="flex items-center justify-center min-h-screen bg-muted">
+      <div className="flex items-center justify-center min-h-[70vh] bg-muted">
         <Card className="mx-auto max-w-md w-full py-8">
           <CardHeader className="text-center">
             <CardTitle className="text-2xl text-destructive">Reset Failed</CardTitle>
@@ -124,7 +124,7 @@ const ResetPassword = () => {
   }
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-muted">
+    <div className="flex items-center justify-center min-h-[70vh] bg-muted">
       <Card className="mx-auto max-w-md w-full py-8">
         <CardHeader>
           <CardTitle className="text-2xl">Reset Password</CardTitle>

@@ -8,7 +8,7 @@ import { usePageTitle } from "../../hooks/usePageTitle";
 const NotFound = () => {
   usePageTitle("Page Not Found");
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100 p-4">
+    <div className="min-h-[70vh] flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100 p-4">
       <div className="max-w-4xl w-full">
         <div className="text-center mb-8">
           <h1 className="text-9xl font-bold text-orange-500  ">404</h1>

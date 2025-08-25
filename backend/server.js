@@ -73,25 +73,43 @@ app.get("/api/health", (req, res) => {
 });
 
 // Socket.IO connection handling
+
+// In your backend Socket.IO connection handler
 io.on("connection", (socket) => {
-  console.log(`User connected: ${socket.id}`);
+  // console.log(`✅ User connected: ${socket.id}`);
 
   // Join room for parcel tracking
-  socket.on("joinParcel", (trackingNumber) => {
-    socket.join(`parcel_${trackingNumber}`);
-    console.log(`Socket ${socket.id} joined parcel_${trackingNumber}`);
+  socket.on("joinParcel", (trackingNumber, callback) => {
+    const roomName = `parcel_${trackingNumber}`;
+    // console.log(`📦 Socket ${socket.id} joining room: ${roomName}`);
+
+    socket.join(roomName);
+
+    // Debug: list all rooms this socket is in
+    const rooms = Array.from(socket.rooms);
+    // console.log(`🏠 Socket ${socket.id} now in rooms:`, rooms);
+
+    if (callback) {
+      callback({ success: true, message: `Joined room: ${roomName}` });
+    }
   });
 
   // Leave room
   socket.on("leaveParcel", (trackingNumber) => {
-    socket.leave(`parcel_${trackingNumber}`);
+    const roomName = `parcel_${trackingNumber}`;
+    // console.log(`📦 Socket ${socket.id} leaving room: ${roomName}`);
+    socket.leave(roomName);
   });
 
-  socket.on("disconnect", () => {
-    console.log(`User disconnected: ${socket.id}`);
+  // Debug: log all events
+  socket.onAny((event, data) => {
+    // console.log(`📡 Socket event from ${socket.id}: ${event}`, data);
+  });
+
+  socket.on("disconnect", (reason) => {
+    // console.log(`❌ User disconnected: ${socket.id}`, reason);
   });
 });
-
 // Error handling middleware
 app.use(notFound);
 app.use(errorHandler);

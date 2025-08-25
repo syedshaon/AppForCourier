@@ -75,7 +75,7 @@ const VerifyEmail = () => {
 
   if (status === "loading") {
     return (
-      <div className="flex items-center justify-center min-h-screen bg-muted">
+      <div className="flex items-center justify-center min-h-[70vh] bg-muted">
         <Card className="mx-auto max-w-md w-full py-8">
           <CardHeader>
             <CardTitle className="text-2xl text-center">Verifying Email</CardTitle>
@@ -90,7 +90,7 @@ const VerifyEmail = () => {
   }
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-muted">
+    <div className="flex items-center justify-center min-h-[70vh] bg-muted">
       <Card className="mx-auto max-w-md w-full py-8">
         <CardHeader>
           <CardTitle className="text-2xl text-center">{status === "success" ? "Email Verified!" : "Verification Failed"}</CardTitle>

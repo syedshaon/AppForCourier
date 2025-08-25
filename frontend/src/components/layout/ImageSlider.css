@@ -1,0 +1,110 @@
+/* ImageSlider.css */
+.slider-container {
+  position: relative;
+  width: 100%;
+  height: 500px; /* Adjust as needed */
+  overflow: hidden;
+}
+
+.slider-image {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0;
+  /* The transition only applies when opacity is changing to 1 */
+  transition: opacity 1s ease-in, transform 1s ease-in;
+}
+
+.slider-image.active {
+  /* When the image becomes active, it transitions in */
+  opacity: 1;
+}
+
+.slider-image:not(.active) {
+  /* When the image is not active, it has an instant transition to opacity 0 */
+  transition: none;
+}
+
+/* Mobile specific styles */
+@media (max-width: 600px) {
+  .slider-image {
+    width: 100%;
+  }
+
+  .slider-image.active {
+    opacity: 1;
+  }
+}
+
+/* Tablet specific styles */
+@media (min-width: 1200px) {
+  .slider-image {
+    width: 33%;
+  }
+
+  /* This is the core logic for the staggered fade-in */
+  .slider-image:nth-child(1).active {
+    opacity: 1;
+    transform: translateX(0%); /* First 1/5 portion */
+  }
+
+  .slider-image:nth-child(2).active {
+    opacity: 1;
+    transform: translateX(50%); /* Second 1/5 portion */
+  }
+
+  .slider-image:nth-child(3).active {
+    opacity: 1;
+    transform: translateX(100%); /* Third 1/5 portion */
+  }
+
+  .slider-image:nth-child(4).active {
+    opacity: 1;
+    transform: translateX(150%); /* Fourth 1/5 portion */
+  }
+
+  .slider-image:nth-child(5).active {
+    opacity: 1;
+    transform: translateX(200%); /* Fifth 1/5 portion */
+  }
+
+  .slider-image.active {
+    opacity: 1;
+  }
+}
+
+/* Desktop  specific styles */
+@media (min-width: 1201px) {
+  .slider-image {
+    width: 20%; /* 1/5 of the container width */
+  }
+
+  /* This is the core logic for the staggered fade-in */
+  .slider-image:nth-child(1).active {
+    opacity: 1;
+    transform: translateX(0%); /* First 1/5 portion */
+  }
+
+  .slider-image:nth-child(2).active {
+    opacity: 1;
+    transform: translateX(100%); /* Second 1/5 portion */
+  }
+
+  .slider-image:nth-child(3).active {
+    opacity: 1;
+    transform: translateX(200%); /* Third 1/5 portion */
+  }
+
+  .slider-image:nth-child(4).active {
+    opacity: 1;
+    transform: translateX(300%); /* Fourth 1/5 portion */
+  }
+
+  .slider-image:nth-child(5).active {
+    opacity: 1;
+    transform: translateX(400%); /* Fifth 1/5 portion */
+  }
+}

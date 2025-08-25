@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Truck, Clock, Shield } from "lucide-react";
 import { usePageTitle } from "../../hooks/usePageTitle";
+import ImageSlider from "../layout/ImageSlider";
 
 const Homepage = () => {
   const { isAuthenticated } = useAuthStore();
@@ -19,7 +20,7 @@ const Homepage = () => {
             <div className="flex flex-col justify-center space-y-4">
               <div className="space-y-2">
                 <h1 className="text-3xl font-bold tracking-tighter sm:text-5xl text-secondary xl:text-6xl/none">Fast & Reliable Courier Services</h1>
-                <p className="max-w-[600px] text-muted-foreground md:text-xl">Rui Courier delivers your parcels with speed and precision. Track your shipments in real-time and experience the best delivery service.</p>
+                <p className="max-w-[600px] text-secondary md:text-xl">Rui Courier delivers your parcels with speed and precision. Track your shipments in real-time and experience the best delivery service.</p>
               </div>
               <div className="flex flex-col gap-2 min-[400px]:flex-row">
                 {isAuthenticated ? (
@@ -44,6 +45,7 @@ const Homepage = () => {
           </div>
         </div>
       </section>
+      <ImageSlider />
 
       {/* Features Section */}
       <section className="w-full py-12 md:py-24 lg:py-32 bg-white">
@@ -51,7 +53,7 @@ const Homepage = () => {
           <div className="flex flex-col items-center justify-center space-y-4 text-center">
             <div className="space-y-2">
               <h2 className="text-3xl font-bold tracking-tighter sm:text-5xl text-secondary ">Why Choose Rui Courier</h2>
-              <p className="max-w-[900px] text-muted-foreground md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed">We provide the best delivery experience with our advanced tracking and reliable service.</p>
+              <p className="max-w-[900px] text-secondary md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed">We provide the best delivery experience with our advanced tracking and reliable service.</p>
             </div>
           </div>
           <div className="mx-auto grid max-w-5xl items-start gap-8 sm:grid-cols-2 md:grid-cols-3 py-12">

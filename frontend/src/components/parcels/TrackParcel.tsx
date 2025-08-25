@@ -3,8 +3,18 @@ import { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { parcelApi } from "../../services/api";
 import { toast } from "sonner";
-import { Search, MapPin, Clock, CheckCircle, Truck } from "lucide-react";
+import { Search, MapPin, Clock, CheckCircle, Truck, Wifi, WifiOff } from "lucide-react";
 import { LoadScript, GoogleMap, Marker } from "@react-google-maps/api";
+import { useParcelTracking } from "../../hooks/useParcelTracking";
+import { useSocket } from "../../store/SocketContext";
+
+interface StatusUpdate {
+  status: string;
+  notes: string;
+  timestamp: string;
+  latitude: number | null;
+  longitude: number | null;
+}
 
 interface TrackingInfo {
   trackingNumber: string;
@@ -13,13 +23,12 @@ interface TrackingInfo {
   deliveryCity: string;
   expectedDelivery: string;
   actualDelivery: string | null;
-  statusHistory: Array<{
-    status: string;
-    notes: string;
-    timestamp: string;
-    latitude: number | null;
-    longitude: number | null;
-  }>;
+  statusHistory: StatusUpdate[];
+}
+
+interface RealTimeUpdate extends StatusUpdate {
+  trackingNumber: string;
+  receivedAt: string;
 }
 
 export default function TrackParcel() {
@@ -27,11 +36,50 @@ export default function TrackParcel() {
   const [trackingNumber, setTrackingNumber] = useState(trackingNumberFromUrl || "");
   const [isLoading, setIsLoading] = useState(false);
   const [trackingInfo, setTrackingInfo] = useState<TrackingInfo | null>(null);
+  const [realTimeUpdates, setRealTimeUpdates] = useState<RealTimeUpdate[]>([]);
+  const { socket, isConnected, connectionError } = useSocket();
 
-  // Get the latest status update
-  const latestUpdate = trackingInfo?.statusHistory[0]; // Assuming statusHistory is sorted with latest first
+  // Use the URL parameter FIRST, then fall back to trackingInfo
+  const effectiveTrackingNumber = trackingNumberFromUrl || trackingInfo?.trackingNumber;
 
-  // Check if the latest update has location info
+  // Handle real-time status updates
+  const handleStatusUpdate = (update: any) => {
+    const newUpdate: RealTimeUpdate = {
+      ...update,
+      receivedAt: new Date().toLocaleString(),
+      latitude: update.latitude || null,
+      longitude: update.longitude || null,
+      notes: update.notes || "Status updated",
+    };
+
+    setRealTimeUpdates((prev) => [newUpdate, ...prev]);
+
+    // Update the main tracking info if it matches
+    if (trackingInfo && update.trackingNumber === trackingInfo.trackingNumber) {
+      setTrackingInfo((prev) => ({
+        ...prev!,
+        status: update.status,
+        statusHistory: [
+          {
+            status: update.status,
+            notes: update.notes || "Status updated",
+            timestamp: update.timestamp || new Date().toISOString(),
+            latitude: update.latitude || null,
+            longitude: update.longitude || null,
+          },
+          ...prev!.statusHistory,
+        ],
+      }));
+
+      toast.success(`Status updated: ${update.status}`);
+    }
+  };
+
+  // Use the tracking hook with the effective tracking number
+  const { isConnected: isTrackingConnected } = useParcelTracking(effectiveTrackingNumber, handleStatusUpdate);
+
+  // Get the latest status update (either from API or real-time)
+  const latestUpdate = trackingInfo?.statusHistory[0];
   const hasLocation = latestUpdate?.latitude && latestUpdate?.longitude;
 
   // Map configuration
@@ -50,6 +98,18 @@ export default function TrackParcel() {
         lng: 0,
       };
 
+  // Debug logging
+  useEffect(() => {
+    console.log("📊 TrackParcel component state:", {
+      trackingNumberFromUrl,
+      effectiveTrackingNumber,
+      trackingInfo: trackingInfo?.trackingNumber,
+      isConnected,
+      connectionError,
+      hasSocket: !!socket,
+    });
+  }, [trackingNumberFromUrl, effectiveTrackingNumber, trackingInfo, isConnected, connectionError, socket]);
+
   // Fetch tracking info when component mounts with tracking number from URL
   useEffect(() => {
     if (trackingNumberFromUrl) {
@@ -64,7 +124,8 @@ export default function TrackParcel() {
     try {
       const response = await parcelApi.trackParcel(trackingNum);
       setTrackingInfo(response.data.data);
-      setTrackingNumber(trackingNum); // Update input field with the tracking number
+      setTrackingNumber(trackingNum);
+      setRealTimeUpdates([]);
     } catch (error: any) {
       toast.error(error.response?.data?.message || "Parcel not found");
       setTrackingInfo(null);
@@ -90,8 +151,29 @@ export default function TrackParcel() {
     }
   };
 
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case "DELIVERED":
+        return "text-green-600 bg-green-50 border-green-200";
+      case "IN_TRANSIT":
+      case "OUT_FOR_DELIVERY":
+        return "text-blue-600 bg-blue-50 border-blue-200";
+      case "FAILED":
+        return "text-red-600 bg-red-50 border-red-200";
+      default:
+        return "text-yellow-600 bg-yellow-50 border-yellow-200";
+    }
+  };
+
   return (
     <div className="max-w-4xl mx-auto p-6">
+      {/* Connection Status Indicator */}
+      <div className={`flex items-center gap-2 p-3 mb-4 rounded-lg ${isConnected ? "bg-green-50 text-green-700 border border-green-200" : "bg-yellow-50 text-yellow-700 border border-yellow-200"}`}>
+        {isConnected ? <Wifi className="w-4 h-4" /> : <WifiOff className="w-4 h-4" />}
+        <span className="text-sm">{isConnected ? "Real-time updates connected" : "Real-time updates disconnected"}</span>
+        {connectionError && <span className="text-xs ml-2">({connectionError})</span>}
+      </div>
+
       <div className="border rounded-lg shadow-md p-6 mb-6">
         <h2 className="text-2xl font-bold mb-4">Track Your Parcel</h2>
 
@@ -112,6 +194,17 @@ export default function TrackParcel() {
 
       {trackingInfo && !isLoading && (
         <div className="border rounded-lg shadow-md p-6">
+          {/* Current Status Banner */}
+          <div className={`p-4 rounded-lg mb-6 border ${getStatusColor(trackingInfo.status)}`}>
+            <div className="flex items-center gap-3">
+              {getStatusIcon(trackingInfo.status)}
+              <div>
+                <h3 className="font-semibold">Current Status</h3>
+                <p className="capitalize text-lg">{trackingInfo.status.toLowerCase().replace("_", " ")}</p>
+              </div>
+            </div>
+          </div>
+
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
             <div className="text-center p-4 border rounded-lg">
               <MapPin className="w-8 h-8 mx-auto mb-2 text-blue-500" />
@@ -132,7 +225,7 @@ export default function TrackParcel() {
             </div>
           </div>
 
-          {/* Current Location Map - Only show if latest update has location */}
+          {/* Current Location Map */}
           {hasLocation && (
             <div className="mb-6">
               <h3 className="text-lg font-semibold mb-3">Current Location</h3>
@@ -148,6 +241,28 @@ export default function TrackParcel() {
                     Coordinates: {latestUpdate.latitude?.toFixed(6)}, {latestUpdate.longitude?.toFixed(6)}
                   </p>
                 </div>
+              </div>
+            </div>
+          )}
+
+          {/* Real-time Updates Section */}
+          {realTimeUpdates.length > 0 && (
+            <div className="mb-6">
+              <h3 className="text-lg font-semibold mb-3">Live Updates</h3>
+              <div className="space-y-2">
+                {realTimeUpdates.slice(0, 5).map((update, index) => (
+                  <div key={index} className="p-3 bg-blue-50 border border-blue-200 rounded-lg">
+                    <div className="flex items-center gap-2">
+                      <div className="w-2 h-2 bg-blue-500 rounded-full animate-pulse"></div>
+                      <span className="text-sm font-medium text-blue-700">LIVE</span>
+                      <span className="text-xs text-blue-600">{update.receivedAt}</span>
+                    </div>
+                    <p className="mt-1 text-sm">
+                      <span className="font-medium capitalize">{update.status.toLowerCase().replace("_", " ")}</span>
+                      {update.notes && ` - ${update.notes}`}
+                    </p>
+                  </div>
+                ))}
               </div>
             </div>
           )}

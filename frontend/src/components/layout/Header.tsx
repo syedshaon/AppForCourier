@@ -67,7 +67,7 @@ const Header = () => {
                   {user?.role === "ADMIN" && (
                     <NavigationMenuItem>
                       <Link to="/admin" className="text-sm font-medium transition-colors hover:text-primary">
-                        Admin
+                        Dashboard
                       </Link>
                     </NavigationMenuItem>
                   )}
@@ -91,11 +91,18 @@ const Header = () => {
 
         <div className="flex flex-1 items-center justify-between space-x-2 md:justify-end">
           <div className="w-full flex-1 md:w-auto md:flex-none">{/* Search bar could go here */}</div>
-          <nav className="flex items-center space-x-2">
+          <nav className="flex items-center space-x-2 ">
             {isAuthenticated ? (
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" className="relative h-8 w-8 rounded-full">
+                  <Button
+                    variant="ghost"
+                    className="relative h-8 w-8 rounded-full cursor-pointer
+                  
+                  
+                  
+                  "
+                  >
                     <Avatar className="h-8 w-8">
                       <AvatarImage src="/avatars/placeholder.jpg" alt={getUserDisplayName()} />
                       <AvatarFallback>{getUserInitials()}</AvatarFallback>

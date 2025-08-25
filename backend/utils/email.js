@@ -129,6 +129,7 @@ const getStatusColor = (status) => {
 export const sendParcelStatusUpdateEmail = async (parcelData, newStatus, notes = "") => {
   try {
     const { customer, trackingNumber, pickupAddress, deliveryAddress } = parcelData;
+
     const trackingUrl = `${process.env.FRONTEND_URL}/parcels/track/${trackingNumber}`;
     const statusDescription = getStatusDescription(newStatus);
     const statusColor = getStatusColor(newStatus);
