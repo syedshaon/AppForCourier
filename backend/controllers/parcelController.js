@@ -3,6 +3,8 @@ import QRCode from "qrcode";
 import { generateTrackingNumber } from "../utils/trackingGenerator.js";
 import { calculateShippingCost } from "../utils/shippingCalculator.js";
 
+import { sendParcelStatusUpdateEmail, sendAgentAssignmentEmail, sendParcelCreationEmail } from "../utils/email.js";
+
 const prisma = new PrismaClient();
 
 // Create a new parcel with address handling
@@ -111,6 +113,13 @@ export const createParcel = async (req, res) => {
       return parcel;
     });
 
+    // Send email confirmation to customer
+    try {
+      await sendParcelCreationEmail(result);
+    } catch (emailError) {
+      console.error("Failed to send creation confirmation email:", emailError);
+      // Don't fail the request if email fails
+    }
     // Emit real-time update
     req.io.to(`parcel_${trackingNumber}`).emit("parcelCreated", {
       trackingNumber,
@@ -343,7 +352,6 @@ export const getParcelByTracking = async (req, res) => {
 // Update parcel status (Agent/Admin)
 // Update parcel status (Agent/Admin)
 export const updateParcelStatus = async (req, res) => {
-  console.log("Update parcel status called");
   try {
     const { id } = req.params;
     const { status, notes, latitude, longitude } = req.body;
@@ -411,6 +419,14 @@ export const updateParcelStatus = async (req, res) => {
 
       return updated;
     });
+
+    // Send email notification to customer about status change
+    try {
+      await sendParcelStatusUpdateEmail(updatedParcel, status, notes);
+    } catch (emailError) {
+      console.error("Failed to send status update email:", emailError);
+      // Don't fail the request if email fails
+    }
 
     // Emit real-time update
     req.io.to(`parcel_${parcel.trackingNumber}`).emit("statusUpdated", {
@@ -612,6 +628,22 @@ export const assignAgent = async (req, res) => {
 
       return parcel;
     });
+
+    // Send email notification to agent
+    try {
+      await sendAgentAssignmentEmail(agent, updatedParcel);
+    } catch (emailError) {
+      console.error("Failed to send agent assignment email:", emailError);
+      // Don't fail the request if email fails
+    }
+
+    // Send email notification to customer about agent assignment
+    try {
+      await sendParcelStatusUpdateEmail(updatedParcel, "ASSIGNED", `Agent ${agent.firstName} ${agent.lastName} has been assigned to your parcel`);
+    } catch (emailError) {
+      console.error("Failed to send status update email:", emailError);
+      // Don't fail the request if email fails
+    }
 
     // Emit real-time update
     req.io.to(`parcel_${updatedParcel.trackingNumber}`).emit("agentAssigned", {

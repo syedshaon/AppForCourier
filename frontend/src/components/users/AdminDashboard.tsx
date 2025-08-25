@@ -3,7 +3,7 @@ import ParcelList from "../parcels/ParcelList";
 
 function AdminDashboard() {
   return (
-    <div className="flex 2xl:flex-row flex-col gap-6 min-h-screen border p-6">
+    <div className=" max-w-[1600px] mx-auto flex 2xl:flex-row flex-col gap-6 min-h-screen  p-6">
       <UserManagement />
 
       <ParcelList />

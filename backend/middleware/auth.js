@@ -86,46 +86,6 @@ export const authorize = (...roles) => {
   };
 };
 
-/**
- * Role-based authorization middleware
- * Checks if the authenticated user has one of the required roles
- */
-// export const authorize = (...roles) => {
-//   return (req, res, next) => {
-//     // Check if user is authenticated (should be handled by auth middleware before this)
-//     if (!req.user) {
-//       return res.status(401).json({
-//         success: false,
-//         message: "Authentication required",
-//       });
-//     }
-
-//     // Check if user has required role
-//     if (!roles.includes(req.user.role)) {
-//       return res.status(403).json({
-//         success: false,
-//         message: "Insufficient permissions",
-//         required: roles,
-//         current: req.user.role,
-//       });
-//     }
-
-//     // Check if user account is active
-//     if (!req.user.isActive) {
-//       return res.status(403).json({
-//         success: false,
-//         message: "Account is inactive",
-//       });
-//     }
-
-//     next();
-//   };
-// };
-
-/**
- * Check if user can access a specific parcel
- * Used for parcel-specific operations
- */
 export const authorizeParcelAccess = async (req, res, next) => {
   try {
     const { PrismaClient } = await import("@prisma/client");
