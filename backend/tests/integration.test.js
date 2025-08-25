@@ -351,7 +351,7 @@ describe("Parcel Management Integration Tests", () => {
         };
 
         const res = await request(app).post("/api/parcels").set("Authorization", `Bearer ${customerToken}`).send(parcelData);
-        console.log(res.body);
+        // console.log(res.body);
 
         parcels.push({
           id: res.body.data.id,

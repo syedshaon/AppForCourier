@@ -16,6 +16,11 @@ import RegisterForm from "./components/auth/RegisterForm";
 import VerifyEmail from "./components/auth/VerifyEmail";
 import Profile from "./components/auth/Profile";
 
+// User Specific dashboards
+import AdminDashboard from "./components/users/AdminDashboard";
+import AgentDashboard from "./components/users/AgentDashboard";
+import CustomerDashboard from "./components/users/CustomerDashboard";
+
 // Static pages
 import Homepage from "./components/pages/Homepage";
 import TermsAndConditions from "./components/pages/TermsAndConditions";
@@ -94,10 +99,7 @@ function App() {
               path="/dashboard"
               element={
                 <ProtectedRoute>
-                  <div className="container mx-auto py-10">
-                    <h1 className="text-3xl font-bold">Dashboard</h1>
-                    <p>Welcome to your dashboard!</p>
-                  </div>
+                  <CustomerDashboard />
                 </ProtectedRoute>
               }
             />
@@ -106,10 +108,7 @@ function App() {
               path="/admin/*"
               element={
                 <AdminRoute>
-                  <div className="container mx-auto py-10">
-                    <h1 className="text-3xl font-bold">Admin Dashboard</h1>
-                    <p>Welcome to admin dashboard!</p>
-                  </div>
+                  <AdminDashboard />
                 </AdminRoute>
               }
             />
@@ -118,10 +117,7 @@ function App() {
               path="/agent/*"
               element={
                 <AgentRoute>
-                  <div className="container mx-auto py-10">
-                    <h1 className="text-3xl font-bold">Agent Dashboard</h1>
-                    <p>Welcome to agent dashboard!</p>
-                  </div>
+                  <AgentDashboard />
                 </AgentRoute>
               }
             />

@@ -175,3 +175,20 @@ export const adminApi = {
   getParcelStats: () => api.get("/admin/parcel-stats"),
   getAgents: () => api.get("/users/admin/agents"),
 };
+
+export const userApi = {
+  // Get all users with optional filters
+  getAll: (params?: { role?: string; page?: number; limit?: number; search?: string }) => api.get("/admin/users", { params }),
+
+  // Update user role
+  updateRole: (userId: string, data: { role: string }) => api.patch(`/admin/users/${userId}/role`, data),
+
+  // Deactivate user
+  deactivate: (userId: string) => api.patch(`/admin/users/${userId}/deactivate`),
+
+  // Activate user
+  activate: (userId: string) => api.patch(`/admin/users/${userId}/activate`),
+
+  // Get user by ID
+  getById: (userId: string) => api.get(`/admin/users/${userId}`),
+};

@@ -91,11 +91,14 @@ export default function ParcelList() {
   }
 
   return (
-    <div className=" min-h-36 rounded-lg shadow-md p-6">
+    <div className=" min-h-36 rounded-lg shadow-md px-6 container mx-auto py-10">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
         <h2 className="text-2xl font-bold flex items-center gap-2">
           <Package className="w-6 h-6" />
-          My Parcels
+
+          {user?.role === "CUSTOMER" && "My Parcels"}
+          {user?.role === "AGENT" && "Assigned Parcels"}
+          {user?.role === "ADMIN" && "All Parcels"}
         </h2>
 
         <div className="flex gap-2 w-full sm:w-auto">
