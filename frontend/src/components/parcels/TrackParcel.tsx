@@ -77,6 +77,9 @@ export default function TrackParcel() {
 
   // Use the tracking hook with the effective tracking number
   const { isConnected: isTrackingConnected } = useParcelTracking(effectiveTrackingNumber, handleStatusUpdate);
+  if (isConnected) {
+    console.log("Tracking socket connected:", isTrackingConnected);
+  }
 
   // Get the latest status update (either from API or real-time)
   const latestUpdate = trackingInfo?.statusHistory[0];

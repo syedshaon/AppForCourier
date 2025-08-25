@@ -10,9 +10,9 @@ import { useState } from "react"; // Add state for loading
 import { toast } from "sonner"; // For notifications
 
 const Header = () => {
-  const { user, isAuthenticated, logout, token } = useAuthStore();
+  const { user, isAuthenticated, logout } = useAuthStore();
   const navigate = useNavigate();
-  const [isLoggingOut, setIsLoggingOut] = useState(false);
+  const [_isLoggingOut, setIsLoggingOut] = useState(false);
 
   // In your Header component or wherever you handle logout
   const handleLogout = async () => {

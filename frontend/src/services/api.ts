@@ -70,7 +70,7 @@ api.interceptors.response.use(
 
         // Call refresh endpoint
         const response = await axios.post(`${API_BASE_URL}/auth/refresh`, { token: refreshToken });
-        const { token: newAccessToken, refreshToken: newRefreshToken, user } = response.data.data;
+        const { token: newAccessToken, refreshToken: newRefreshToken } = response.data.data;
 
         // Update the store
         useAuthStore.getState().setToken(newAccessToken);

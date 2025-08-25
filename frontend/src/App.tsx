@@ -39,7 +39,7 @@ import { useAuthStore } from "./store/authStore";
 import { Loader2 } from "lucide-react";
 
 function App() {
-  const { isAuthenticated, initializeAuth } = useAuthStore();
+  const { isAuthenticated: _isAuthenticated, initializeAuth } = useAuthStore();
   const [isInitializing, setIsInitializing] = useState(true);
 
   useEffect(() => {

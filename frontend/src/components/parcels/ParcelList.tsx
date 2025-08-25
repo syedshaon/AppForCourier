@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import { parcelApi } from "../../services/api";
 import { useAuthStore } from "../../store/authStore";
 import { toast } from "sonner";
-import { Package, Search, Filter, Eye } from "lucide-react";
+import { Package, Search,  Eye } from "lucide-react";
 import { Link } from "react-router-dom";
 
 interface Parcel {

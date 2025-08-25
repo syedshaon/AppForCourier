@@ -1,7 +1,7 @@
 // src/components/auth/RegisterForm.tsx
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import { useAuthStore } from "../../store/authStore";
+
 import { authApi } from "../../services/api";
 import { toast } from "sonner";
 import { Button } from "../ui/button";
@@ -24,7 +24,6 @@ const RegisterForm = () => {
   const [agreeToTerms, setAgreeToTerms] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
-  const { login } = useAuthStore();
   const navigate = useNavigate();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -63,9 +62,9 @@ const RegisterForm = () => {
 
       // Check if the response has the expected structure
       if (response.data && response.data.user && response.data.token) {
-        const { user, token, emailSent } = response.data;
+        const { user, emailSent } = response.data;
 
-        login(user, token);
+        // login(user, token);
 
         if (emailSent) {
           toast.success("Registration successful! Please check your email to verify your account.");

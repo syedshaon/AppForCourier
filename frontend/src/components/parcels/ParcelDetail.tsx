@@ -4,11 +4,11 @@ import { useParams } from "react-router-dom";
 import { parcelApi } from "../../services/api";
 import { useAuthStore } from "../../store/authStore";
 import { toast } from "sonner";
-import { Package, MapPin, Clock, User, Truck, CheckCircle, AlertCircle, Phone, Mail, Calendar, DollarSign, Weight, QrCode, Navigation } from "lucide-react";
+import { Package, MapPin, Clock, User, Truck, CheckCircle, AlertCircle, Phone, Mail, Calendar, DollarSign, Weight, Navigation } from "lucide-react";
 import StatusUpdateForm from "./StatusUpdateForm";
 import AgentAssignmentForm from "./AgentAssignmentForm";
 import DirectionsModal from "./DirectionsModal";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 
 interface ParcelDetail {
   id: string;
@@ -275,7 +275,7 @@ export default function ParcelDetail() {
             <h2 className="text-xl font-semibold mb-4">Status History</h2>
 
             <div className="space-y-4">
-              {parcel.statusUpdates.map((update, index) => (
+              {parcel.statusUpdates.map((update) => (
                 <div key={update.id} className="flex items-start gap-4 p-4 border rounded-lg">
                   <div className="flex-shrink-0 mt-1">{getStatusIcon(update.status)}</div>
 

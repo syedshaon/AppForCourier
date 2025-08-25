@@ -3,7 +3,6 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { parcelApi } from "../../services/api";
-import { useAuthStore } from "../../store/authStore";
 import { toast } from "sonner";
 import { Loader2, MapPin, Package, Weight, Calendar } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -43,7 +42,7 @@ type ParcelFormData = z.infer<typeof parcelSchema>;
 
 export default function CreateParcelForm() {
   const [isLoading, setIsLoading] = useState(false);
-  const { user } = useAuthStore();
+
   const navigate = useNavigate();
 
   const {
@@ -73,7 +72,7 @@ export default function CreateParcelForm() {
   const onSubmit = async (data: ParcelFormData) => {
     setIsLoading(true);
     try {
-      const response = await parcelApi.createParcel(data);
+      await parcelApi.createParcel(data);
       toast.success("Parcel created successfully!");
       reset();
       // Optionally, navigate to the parcel details or list page
