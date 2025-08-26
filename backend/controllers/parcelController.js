@@ -403,6 +403,7 @@ export const updateParcelStatus = async (req, res) => {
               firstName: true,
               lastName: true,
               email: true,
+              role: true,
             },
           },
           pickupAddress: true,

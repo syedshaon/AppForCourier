@@ -191,6 +191,14 @@ export const changePassword = async (req, res) => {
   try {
     const { currentPassword, newPassword } = req.body;
     const userId = req.user.id;
+    // if user id is cmesva6ze0000hbkbreoms7ju
+    // cmesvs7io0001hbkb7zx2nev1;
+    // cmesvzfea0002hbkbyoan6f6c;
+    // cmesw3f840003hbkbdgl4ba5r;
+    // cmesx2lf9000khbkbdtqocg2c; then don't allow password change
+    if (userId === "cmesva6ze0000hbkbreoms7ju" || userId === "cmesvs7io0001hbkb7zx2nev1" || userId === "cmesvzfea0002hbkbyoan6f6c" || userId === "cmesw3f840003hbkbdgl4ba5r" || userId === "cmesx2lf9000khbkbdtqocg2c") {
+      return unauthorizedResponse(res, "Password change not allowed for this user");
+    }
 
     if (!currentPassword || !newPassword) {
       return badRequestResponse(res, "Current password and new password are required");

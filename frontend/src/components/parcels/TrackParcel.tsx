@@ -216,7 +216,7 @@ export default function TrackParcel() {
             </div>
 
             <div className="text-center p-4 border rounded-lg">
-              {getStatusIcon(trackingInfo.status)}
+              <div className="flex justify-center items-center">{getStatusIcon(trackingInfo.status)}</div>
               <h3 className="font-semibold mt-2">Status</h3>
               <p className="capitalize">{trackingInfo.status.toLowerCase().replace("_", " ")}</p>
             </div>

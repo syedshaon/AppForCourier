@@ -129,6 +129,8 @@ const getStatusColor = (status) => {
 export const sendParcelStatusUpdateEmail = async (parcelData, newStatus, notes = "") => {
   try {
     const { customer, trackingNumber, pickupAddress, deliveryAddress } = parcelData;
+    if (customer.role === "AGENT") return; // Skip if the customer is an agent
+    if (customer.role === "ADMIN") return; // Skip if the customer is an admin
 
     const trackingUrl = `${process.env.FRONTEND_URL}/parcels/track/${trackingNumber}`;
     const statusDescription = getStatusDescription(newStatus);
