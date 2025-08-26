@@ -28,3 +28,8 @@ export interface AuthState {
   logout: () => void;
   setUser: (user: User) => void;
 }
+
+export interface LoginCredentials {
+  email: string;
+  password: string;
+}

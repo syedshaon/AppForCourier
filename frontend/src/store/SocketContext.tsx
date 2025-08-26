@@ -27,7 +27,7 @@ export const SocketProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   const [connectionError, setConnectionError] = useState<string | null>(null);
 
   useEffect(() => {
-    console.log("Initializing Socket.IO connection...");
+    // console.log("Initializing Socket.IO connection...");
 
     // Initialize socket connection
     const newSocket = io(import.meta.env.VITE_BACKEND_URL, {
@@ -41,25 +41,25 @@ export const SocketProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     setSocket(newSocket);
 
     newSocket.on("connect", () => {
-      console.log("✅ Connected to server");
+      // console.log("✅ Connected to server");
       setIsConnected(true);
       setConnectionError(null);
     });
 
     newSocket.on("disconnect", (reason: string) => {
-      console.log("❌ Disconnected from server:", reason);
+      // console.log("❌ Disconnected from server:", reason);
       setIsConnected(false);
       setConnectionError(`Disconnected: ${reason}`);
     });
 
     newSocket.on("connect_error", (error: Error) => {
-      console.error("❌ Connection error:", error.message);
+      // console.error("❌ Connection error:", error.message);
       setConnectionError(`Connection error: ${error.message}`);
       setIsConnected(false);
     });
 
     newSocket.on("error", (error: Error) => {
-      console.error("❌ Socket error:", error);
+      // console.error("❌ Socket error:", error);
       setConnectionError(`Socket error: ${error.message}`);
     });
 
@@ -85,7 +85,7 @@ export const SocketProvider: React.FC<{ children: React.ReactNode }> = ({ childr
 
     // Cleanup on unmount
     return () => {
-      console.log("Cleaning up socket connection...");
+      // console.log("Cleaning up socket connection...");
       newSocket.disconnect();
     };
   }, []);

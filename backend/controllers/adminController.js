@@ -138,9 +138,9 @@ export const updateUserRole = async (req, res) => {
       return badRequestResponse(res, "Cannot change your own role");
     }
 
-    // Validate role transition
-    if (user.role === "ADMIN") {
-      return badRequestResponse(res, "Cannot change role of another admin");
+    // Don't allow changing role to ADMIN
+    if (role === "ADMIN") {
+      return badRequestResponse(res, "Cannot assign ADMIN role");
     }
 
     // Don't allow changing role to ADMIN

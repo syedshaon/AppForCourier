@@ -12,7 +12,7 @@ import { usePageTitle } from "../../hooks/usePageTitle";
 
 const Profile = () => {
   usePageTitle("Profile");
-  const { user, updateUser, logout } = useAuthStore();
+  const { user, setUser, logout } = useAuthStore();
   const [profileFormData, setProfileFormData] = useState({
     firstName: "",
     lastName: "",
@@ -63,7 +63,7 @@ const Profile = () => {
       const updatedUser = response.data.data.user;
 
       // Update user in store using updateUser method
-      updateUser(updatedUser);
+      setUser(updatedUser);
       toast.success("Profile updated successfully");
     } catch (error: any) {
       const message = error.response?.data?.message || "Failed to update profile";

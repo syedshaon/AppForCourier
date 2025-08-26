@@ -13,7 +13,9 @@ router.get("/track/:trackingNumber", getParcelByTracking);
 router.use(authenticate);
 
 // Customer routes
-router.post("/", authorize("CUSTOMER"), validateParcel, createParcel);
+// custom, agent, admin can create parcels
+// router.post("/", authorize("CUSTOMER"), validateParcel, createParcel);
+router.post("/", authorize("CUSTOMER", "AGENT", "ADMIN"), validateParcel, createParcel);
 router.get("/my-parcels", authorize("CUSTOMER"), getUserParcels);
 
 // Agent routes

@@ -6,6 +6,7 @@ import dotenv from "dotenv";
 import { createServer } from "http";
 import { Server } from "socket.io";
 import rateLimit from "express-rate-limit";
+import cookieParser from "cookie-parser";
 
 // Import routes
 import authRoutes from "./routes/auth.js";
@@ -48,6 +49,7 @@ app.use(morgan("combined"));
 app.use(express.json({ limit: "10mb" }));
 app.use(express.urlencoded({ extended: true }));
 app.use(limiter);
+app.use(cookieParser());
 
 // Make io available to routes
 app.use((req, res, next) => {

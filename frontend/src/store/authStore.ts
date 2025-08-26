@@ -18,16 +18,13 @@ interface User {
 
 interface AuthState {
   user: User | null;
-  token: string | null;
-  refreshToken: string | null;
+  token: string | null; // access token only
   isAuthenticated: boolean;
   isInitialized: boolean;
-  login: (user: User, token: string, refreshToken: string) => void;
+  login: (user: User, token: string) => void;
   logout: () => void;
   setUser: (user: User | null) => void;
-  updateUser: (updates: Partial<User>) => void; // New method for partial updates
   setToken: (token: string) => void;
-  setRefreshToken: (refreshToken: string) => void;
   initializeAuth: () => Promise<void>;
 }
 
@@ -36,66 +33,39 @@ export const useAuthStore = create<AuthState>()(
     (set, get) => ({
       user: null,
       token: null,
-      refreshToken: null,
       isAuthenticated: false,
       isInitialized: false,
 
-      login: (user, token, refreshToken) => {
-        set({ user, token, refreshToken, isAuthenticated: true });
-        localStorage.setItem("refreshToken", refreshToken);
+      login: (user, token) => {
+        set({ user, token, isAuthenticated: true });
       },
 
       logout: () => {
-        set({ user: null, token: null, refreshToken: null, isAuthenticated: false, isInitialized: true });
-        localStorage.removeItem("refreshToken");
+        set({ user: null, token: null, isAuthenticated: false, isInitialized: true });
+        // Call backend to clear cookie
+        authApi.logout();
       },
 
       setUser: (user) => set({ user }),
 
-      updateUser: (updates) => {
-        const currentUser = get().user;
-        if (currentUser) {
-          set({ user: { ...currentUser, ...updates } });
-        }
-      },
-
       setToken: (token) => set({ token }),
 
-      setRefreshToken: (refreshToken) => {
-        set({ refreshToken });
-        localStorage.setItem("refreshToken", refreshToken);
-      },
-
       initializeAuth: async () => {
-        // If already initialized, skip
         if (get().isInitialized) return;
 
         try {
-          const storedRefreshToken = localStorage.getItem("refreshToken");
+          // Call backend refresh endpoint → cookie is sent automatically
+          const response = await authApi.refreshToken();
+          const { user, token } = response.data.data;
 
-          if (storedRefreshToken) {
-            try {
-              const response = await authApi.refreshToken({ token: storedRefreshToken });
-              const { user, token: newToken, refreshToken: newRefreshToken } = response.data.data;
-
-              set({
-                user,
-                token: newToken,
-                refreshToken: newRefreshToken,
-                isAuthenticated: true,
-                isInitialized: true,
-              });
-              return;
-            } catch (refreshError) {
-              console.error("Token refresh failed:", refreshError);
-              // Refresh token is invalid, clear it
-              localStorage.removeItem("refreshToken");
-            }
-          }
-        } catch (error) {
-          console.error("Auth initialization failed:", error);
-        } finally {
-          // Mark as initialized even if failed
+          set({
+            user,
+            token,
+            isAuthenticated: true,
+            isInitialized: true,
+          });
+        } catch (err) {
+          console.error("Auth init failed:", err);
           set({ isInitialized: true });
         }
       },
@@ -105,7 +75,6 @@ export const useAuthStore = create<AuthState>()(
       partialize: (state) => ({
         user: state.user,
         token: state.token,
-        refreshToken: state.refreshToken,
         isAuthenticated: state.isAuthenticated,
         isInitialized: state.isInitialized,
       }),

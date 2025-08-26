@@ -7,5 +7,5 @@ const router = express.Router();
 // Protected routes - require authentication
 router.use(authenticate);
 // Admin routes
-router.get("/admin/agents", authorize("ADMIN"), getAllAgents);
+router.get("/agents", authorize("ADMIN"), getAllAgents);
 export default router;

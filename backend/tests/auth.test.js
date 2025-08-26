@@ -1,14 +1,17 @@
-// tests/auth.test.js
 import request from "supertest";
 import { app, server } from "../server.js";
 import { prisma } from "../utils/prisma.js";
 
 describe("Auth Endpoints", () => {
   let authToken; // access token
-  let refreshToken; // refresh token
+  let refreshTokenCookie; // refresh token cookie string
   let testUserId;
+  let agent; // SuperTest agent to maintain cookies
 
   beforeAll(async () => {
+    // Create a SuperTest agent to maintain cookies across requests
+    agent = request.agent(app);
+
     // Clean up any existing test data
     await prisma.user.deleteMany({
       where: { email: "test@example.com" },
@@ -28,9 +31,8 @@ describe("Auth Endpoints", () => {
     }
   });
 
-  // tests/auth.test.js
   test("POST /api/auth/register - should register a new user", async () => {
-    const res = await request(app).post("/api/auth/register").send({
+    const res = await agent.post("/api/auth/register").send({
       email: "test@example.com",
       password: "password123",
       firstName: "John",
@@ -56,7 +58,7 @@ describe("Auth Endpoints", () => {
   });
 
   test("POST /api/auth/register - should reject duplicate email", async () => {
-    const res = await request(app).post("/api/auth/register").send({
+    const res = await agent.post("/api/auth/register").send({
       email: "test@example.com",
       password: "password123",
       firstName: "Jane",
@@ -70,7 +72,7 @@ describe("Auth Endpoints", () => {
   });
 
   test("POST /api/auth/login - should login with valid credentials", async () => {
-    const res = await request(app).post("/api/auth/login").send({
+    const res = await agent.post("/api/auth/login").send({
       email: "test@example.com",
       password: "password123",
     });
@@ -78,14 +80,19 @@ describe("Auth Endpoints", () => {
     expect(res.statusCode).toEqual(200);
     expect(res.body.success).toEqual(true);
     expect(res.body.data.token).toBeDefined();
-    expect(res.body.data.refreshToken).toBeDefined(); // Make sure this exists
+
+    // Check for refresh token cookie
+    const cookies = res.headers["set-cookie"];
+    expect(cookies).toBeDefined();
+
+    const refreshTokenCookie = cookies.find((cookie) => cookie.includes("refreshtoken="));
+    expect(refreshTokenCookie).toBeDefined();
 
     authToken = res.body.data.token;
-    refreshToken = res.body.data.refreshToken; // Store the refresh token
   });
 
   test("POST /api/auth/login - should reject invalid credentials", async () => {
-    const res = await request(app).post("/api/auth/login").send({
+    const res = await agent.post("/api/auth/login").send({
       email: "test@example.com",
       password: "wrongpassword",
     });
@@ -95,7 +102,7 @@ describe("Auth Endpoints", () => {
   });
 
   test("GET /api/auth/profile - should get user profile with valid token", async () => {
-    const res = await request(app).get("/api/auth/profile").set("Authorization", `Bearer ${authToken}`);
+    const res = await agent.get("/api/auth/profile").set("Authorization", `Bearer ${authToken}`);
 
     expect(res.statusCode).toEqual(200);
     expect(res.body.success).toEqual(true);
@@ -103,24 +110,14 @@ describe("Auth Endpoints", () => {
   });
 
   test("GET /api/auth/profile - should reject request without token", async () => {
-    const res = await request(app).get("/api/auth/profile");
-
-    console.log("Response status:", res.statusCode);
-    console.log("Response body:", JSON.stringify(res.body, null, 2));
+    const res = await agent.get("/api/auth/profile");
 
     expect(res.statusCode).toEqual(401);
     expect(res.body.success).toEqual(false);
   });
 
-  // test("GET /api/auth/profile - should reject request without token", async () => {
-  //   const res = await request(app).get("/api/auth/profile");
-
-  //   expect(res.statusCode).toEqual(401);
-  //   expect(res.body.success).toEqual(false);
-  // });
-
   test("PUT /api/auth/profile - should update user profile", async () => {
-    const res = await request(app).put("/api/auth/profile").set("Authorization", `Bearer ${authToken}`).send({
+    const res = await agent.put("/api/auth/profile").set("Authorization", `Bearer ${authToken}`).send({
       firstName: "Johnny",
       lastName: "Smith",
     });
@@ -130,18 +127,48 @@ describe("Auth Endpoints", () => {
     expect(res.body.data.user.firstName).toEqual("Johnny");
   });
 
-  test("POST /api/auth/refresh - should refresh token", async () => {
-    const res = await request(app).post("/api/auth/refresh").send({
-      token: refreshToken, // Send refresh token, not access token
+  test("POST /api/auth/refresh - should refresh token using cookie", async () => {
+    // First, make sure we have a refresh token cookie by logging in again
+    const loginRes = await agent.post("/api/auth/login").send({
+      email: "test@example.com",
+      password: "password123",
     });
+
+    authToken = loginRes.body.data.token;
+
+    // Now test refresh endpoint
+    const refreshRes = await agent.post("/api/auth/refresh");
+
+    expect(refreshRes.statusCode).toEqual(200);
+    expect(refreshRes.body.success).toEqual(true);
+    expect(refreshRes.body.data.token).toBeDefined();
+
+    // Should get new refresh token cookie
+    const newCookies = refreshRes.headers["set-cookie"];
+    expect(newCookies).toBeDefined();
+
+    authToken = refreshRes.body.data.token;
+  });
+
+  test("POST /api/auth/refresh - should fail without refresh token cookie", async () => {
+    // Create a new agent without cookies
+    const newAgent = request.agent(app);
+
+    const res = await newAgent.post("/api/auth/refresh");
+
+    expect(res.statusCode).toEqual(400);
+    expect(res.body.success).toEqual(false);
+  });
+
+  test("POST /api/auth/logout - should logout user", async () => {
+    const res = await agent.post("/api/auth/logout").set("Authorization", `Bearer ${authToken}`);
 
     expect(res.statusCode).toEqual(200);
     expect(res.body.success).toEqual(true);
-    expect(res.body.data.token).toBeDefined();
-    expect(res.body.data.refreshToken).toBeDefined(); // Should get new refresh token
 
-    // Update tokens for subsequent tests if needed
-    authToken = res.body.data.token;
-    refreshToken = res.body.data.refreshToken;
+    // Verify refresh token cookie is cleared
+    const cookies = res.headers["set-cookie"];
+    const logoutCookie = cookies.find((cookie) => cookie.includes("refreshtoken=;") || cookie.includes("refreshtoken=null"));
+    expect(logoutCookie).toBeDefined();
   });
 });

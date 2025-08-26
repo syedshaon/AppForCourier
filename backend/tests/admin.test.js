@@ -154,22 +154,7 @@ describe("Admin Endpoints", () => {
     expect(res.body.data.user.email).toEqual("customer@test.com");
   });
 
-  // Test 5: Update user role (customer to agent)
-  test("PATCH /api/admin/users/:id/role - should change customer role to agent", async () => {
-    const res = await request(app).patch(`/api/admin/users/${testCustomerId}/role`).set("Authorization", `Bearer ${adminToken}`).send({ role: "AGENT" });
-
-    expect(res.statusCode).toEqual(200);
-    expect(res.body.success).toEqual(true);
-    expect(res.body.data.user.role).toEqual("AGENT");
-
-    // Verify the change in database
-    const updatedUser = await prisma.user.findUnique({
-      where: { id: testCustomerId },
-    });
-    expect(updatedUser.role).toEqual("AGENT");
-  });
-
-  // Test 6: Update user role (agent to customer)
+  // Test 5: Update user role (agent to customer)
   test("PATCH /api/admin/users/:id/role - should change agent role to customer", async () => {
     const res = await request(app).patch(`/api/admin/users/${testAgentId}/role`).set("Authorization", `Bearer ${adminToken}`).send({ role: "CUSTOMER" });
 
@@ -182,6 +167,21 @@ describe("Admin Endpoints", () => {
       where: { id: testAgentId },
     });
     expect(updatedUser.role).toEqual("CUSTOMER");
+  });
+
+  // Test 6: Update user role (customer to agent)
+  test("PATCH /api/admin/users/:id/role - should change customer role to agent", async () => {
+    const res = await request(app).patch(`/api/admin/users/${testCustomerId}/role`).set("Authorization", `Bearer ${adminToken}`).send({ role: "AGENT" });
+
+    expect(res.statusCode).toEqual(200);
+    expect(res.body.success).toEqual(true);
+    expect(res.body.data.user.role).toEqual("AGENT");
+
+    // Verify the change in database
+    const updatedUser = await prisma.user.findUnique({
+      where: { id: testCustomerId },
+    });
+    expect(updatedUser.role).toEqual("AGENT");
   });
 
   // Test 7: Deactivate user
@@ -228,14 +228,14 @@ describe("Admin Endpoints", () => {
     // First create another admin for testing
     const anotherAdmin = await prisma.user.create({
       data: {
-        email: "admin2@test.com",
+        email: `admin2-${Date.now()}@test.com`, // Make email unique
         password: await bcrypt.hash("password123", 12),
-        firstName: "Admin2",
-        lastName: "User",
-        phoneNumber: "+8801755555555",
+        firstName: "Admin",
+        lastName: "Two",
+        phoneNumber: "+8801700000002",
         role: "ADMIN",
-        isEmailVerified: true,
         isActive: true,
+        isEmailVerified: true,
       },
     });
 

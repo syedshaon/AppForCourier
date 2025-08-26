@@ -444,7 +444,7 @@ export const validateDateRange = (req, res, next) => {
 // });
 
 export const updateRoleSchema = Joi.object({
-  role: Joi.string().valid("ADMIN", "AGENT").required().messages({
+  role: Joi.string().valid("CUSTOMER", "AGENT").required().messages({
     "any.only": "Role must be one of  AGENT, or CUSTOMER",
     "any.required": "Role is required",
   }),

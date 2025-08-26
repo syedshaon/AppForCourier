@@ -113,26 +113,39 @@ export const login = async (req, res) => {
     };
 
     const accessToken = generateAccessToken(tokenPayload);
-    const refreshToken = generateRefreshToken(tokenPayload);
+    const newRefreshToken = generateRefreshToken(tokenPayload);
 
     // Store refresh token in database
-    const refreshTokenExpires = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
+    const newRefreshTokenExpires = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
 
     await prisma.user.update({
       where: { id: user.id },
       data: {
-        refreshToken,
-        refreshTokenExpires,
+        refreshToken: newRefreshToken,
+        refreshTokenExpires: newRefreshTokenExpires,
       },
     });
 
     // Return user data without sensitive fields
-    const { password: _, emailVerifyToken, emailVerifyExpires, passwordResetToken, passwordResetExpires, ...userWithoutSensitiveData } = user;
+    const { password: _, emailVerifyToken, emailVerifyExpires, passwordResetToken, passwordResetExpires, refreshToken, refreshTokenExpires, ...userWithoutSensitiveData } = user;
+
+    // res.cookie("refreshToken", newRefreshToken, {
+    //   httpOnly: true,
+    //   secure: false,
+    //   sameSite: "None",
+    //   path: "/api/auth/refresh",
+    //   maxAge: 7 * 24 * 60 * 60 * 1000,
+    //   expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
+    // });
+    const expirationDate = new Date();
+    expirationDate.setTime(expirationDate.getTime() + 24 * 60 * 60 * 1000); // Add milliseconds
+    const expires = expirationDate.toUTCString();
+
+    res.header("Set-Cookie", `refreshtoken=${newRefreshToken}; Path=/; HttpOnly; Secure; SameSite=None; Expires=${expires};`);
 
     return successResponse(res, "Login successful", {
       user: userWithoutSensitiveData,
       token: accessToken,
-      refreshToken,
     });
   } catch (error) {
     console.error("Login error:", error);
@@ -158,6 +171,13 @@ export const logout = async (req, res) => {
         refreshToken: null,
         refreshTokenExpires: null,
       },
+    });
+    // Clear cookie
+    res.clearCookie("refreshToken", {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "strict",
+      path: "/api/auth/refresh",
     });
 
     return successResponse(res, "Logged out successfully");
@@ -225,23 +245,23 @@ export const changePassword = async (req, res) => {
 // Refresh token endpoint
 export const refreshToken = async (req, res) => {
   try {
-    const { token: refreshToken } = req.body;
+    // console.log("Refresh token request received");
+    const refreshToken = req.cookies.refreshToken || req.cookies.refreshtoken;
+    // console.log("All cookies:", req.cookies);
 
+    // console.log("Refresh token from cookie:", refreshToken);
     if (!refreshToken) {
       return badRequestResponse(res, "Refresh token is required");
     }
 
-    // Verify the refresh token
     const decoded = verifyRefreshToken(refreshToken);
 
-    // Check if refresh token exists in database and is valid
+    // Verify user & token in DB
     const user = await prisma.user.findUnique({
       where: {
         id: decoded.id,
         refreshToken,
-        refreshTokenExpires: {
-          gte: new Date(),
-        },
+        refreshTokenExpires: { gte: new Date() },
       },
     });
 
@@ -250,29 +270,33 @@ export const refreshToken = async (req, res) => {
     }
 
     // Generate new tokens
-    const tokenPayload = {
-      id: user.id,
-      email: user.email,
-      role: user.role,
-    };
-
+    const tokenPayload = { id: user.id, email: user.email, role: user.role };
     const newAccessToken = generateAccessToken(tokenPayload);
     const newRefreshToken = generateRefreshToken(tokenPayload);
 
-    // Update refresh token in database (token rotation)
-    const newRefreshTokenExpires = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
-
+    // Rotate refresh token in DB
     await prisma.user.update({
       where: { id: user.id },
       data: {
         refreshToken: newRefreshToken,
-        refreshTokenExpires: newRefreshTokenExpires,
+        refreshTokenExpires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
       },
     });
 
+    // Set new cookie
+    // res.cookie("refreshToken", newRefreshToken, {
+    //   httpOnly: true,
+    //   secure: false,
+    //   sameSite: "None",
+    //   path: "/api/auth/refresh",
+    //   maxAge: 7 * 24 * 60 * 60 * 1000,
+    //   expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
+    // });
+
+    res.header("Set-Cookie", `refreshtoken=${newRefreshToken}; Path=/; HttpOnly; Secure; SameSite=None;`);
+
     return successResponse(res, "Token refreshed successfully", {
       token: newAccessToken,
-      refreshToken: newRefreshToken,
       user: {
         id: user.id,
         email: user.email,
@@ -285,15 +309,6 @@ export const refreshToken = async (req, res) => {
     });
   } catch (error) {
     console.error("Refresh token error:", error);
-
-    if (error.name === "TokenExpiredError") {
-      return unauthorizedResponse(res, "Refresh token expired");
-    }
-
-    if (error.name === "JsonWebTokenError") {
-      return unauthorizedResponse(res, "Invalid refresh token");
-    }
-
     return unauthorizedResponse(res, "Token refresh failed");
   }
 };
@@ -324,7 +339,6 @@ export const invalidateAllSessions = async (req, res) => {
   }
 };
 
-// Get user profile
 // Get user profile
 export const getProfile = async (req, res) => {
   try {

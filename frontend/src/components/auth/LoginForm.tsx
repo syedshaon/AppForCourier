@@ -33,10 +33,10 @@ const LoginForm = () => {
     try {
       const response = await authApi.login({ email, password });
 
-      const { user: userData, token, refreshToken } = response.data.data;
+      const { user: userData, token } = response.data.data;
 
       // Save both tokens to store
-      login(userData, token, refreshToken);
+      login(userData, token);
       toast.success("Login successful! Welcome back to Rui Courier!");
 
       // Redirect based on user role

@@ -1,10 +1,12 @@
 import axios from "axios";
 import { useAuthStore } from "../store/authStore";
+import type { LoginCredentials } from "@/types/auth";
 
 const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
 
 export const api = axios.create({
   baseURL: API_BASE_URL,
+  withCredentials: true, // ✅ send cookies automatically (important!)
 });
 
 // Add token to requests
@@ -34,18 +36,19 @@ const processQueue = (error: any, token: string | null = null) => {
 api.interceptors.response.use(
   (response) => response,
   async (error) => {
-    console.log("API error interceptor:", error.config?.url, error.response?.status);
+    // console.log("API error interceptor:", error.config?.url, error.response?.status);
     const originalRequest = error.config;
 
-    // For login requests, don't try to refresh token
-    if (error.config?.url.includes("/auth/login")) {
+    // Don't refresh token on login/register requests
+    if (error.config?.url.includes("/auth/login") || error.config?.url.includes("/auth/register")) {
       return Promise.reject(error);
     }
 
-    // If error is 401 and we haven't already tried to refresh
+    // If error is 401 and request has not been retried
     if (error.response?.status === 401 && !originalRequest._retry) {
+      // console.log("Attempting token refresh...");
       if (isRefreshing) {
-        // If we're already refreshing, add this request to the queue
+        // Wait for ongoing refresh
         return new Promise((resolve, reject) => {
           failedQueue.push({ resolve, reject });
         })
@@ -53,37 +56,32 @@ api.interceptors.response.use(
             originalRequest.headers.Authorization = `Bearer ${token}`;
             return api(originalRequest);
           })
-          .catch((err) => {
-            return Promise.reject(err);
-          });
+          .catch((err) => Promise.reject(err));
       }
 
       originalRequest._retry = true;
       isRefreshing = true;
 
+      // console.log("Refreshing token...");
       try {
-        const refreshToken = useAuthStore.getState().refreshToken || localStorage.getItem("refreshToken");
+        // ✅ Call refresh endpoint — refresh token is in HttpOnly cookie
+        const response = await axios.post(`${API_BASE_URL}/auth/refresh`, {}, { withCredentials: true });
 
-        if (!refreshToken) {
-          throw new Error("No refresh token available");
-        }
+        // console.log("Token refreshed:", response.data);
 
-        // Call refresh endpoint
-        const response = await axios.post(`${API_BASE_URL}/auth/refresh`, { token: refreshToken });
-        const { token: newAccessToken, refreshToken: newRefreshToken } = response.data.data;
+        const { token: newAccessToken } = response.data.data;
 
-        // Update the store
+        // ✅ Update only access token in store
         useAuthStore.getState().setToken(newAccessToken);
-        useAuthStore.getState().setRefreshToken(newRefreshToken);
 
-        // Process the queue of failed requests
+        // Retry queued requests
         processQueue(null, newAccessToken);
 
-        // Retry the original request
+        // Retry the original request with new token
         originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
         return api(originalRequest);
       } catch (refreshError) {
-        // Refresh failed, logout user
+        // console.error("Token refresh failed:", refreshError);
         processQueue(refreshError, null);
         useAuthStore.getState().logout();
         window.location.href = "/login";
@@ -97,17 +95,13 @@ api.interceptors.response.use(
   }
 );
 
-// Auth API calls - Updated to handle refresh tokens
+// ✅ Auth API calls
 export const authApi = {
-  login: (data: { email: string; password: string }) => api.post("/auth/login", data),
+  login: (credentials: LoginCredentials) => api.post("/auth/login", credentials, { withCredentials: true }),
 
   register: (data: { firstName: string; lastName: string; email: string; password: string; phoneNumber: string; address?: string }) => api.post("/auth/register", data),
 
-  logout: () => {
-    const token = useAuthStore.getState().token;
-    const config = token ? { headers: { Authorization: `Bearer ${token}` } } : {};
-    return api.post("/auth/logout", {}, config);
-  },
+  logout: () => api.post("/auth/logout", {}, { withCredentials: true }),
 
   getProfile: () => api.get("/auth/profile"),
 
@@ -115,7 +109,7 @@ export const authApi = {
 
   changePassword: (data: { currentPassword: string; newPassword: string }) => api.put("/auth/change-password", data),
 
-  refreshToken: (data: { token: string }) => api.post("/auth/refresh", data),
+  refreshToken: () => api.post("/auth/refresh", {}, { withCredentials: true }),
 
   verifyEmail: (token: string) => api.get(`/auth/verify-email?token=${encodeURIComponent(token)}`),
 
@@ -126,17 +120,7 @@ export const authApi = {
   resetPassword: (data: { token: string; newPassword: string }) => api.post("/auth/reset-password", data),
 };
 
-// Parcel API calls (based on your Prisma schema)
-// export const parcelApi = {
-//   getAll: () => api.get("/parcels"),
-//   getById: (id: string) => api.get(`/parcels/${id}`),
-//   create: (data: any) => api.post("/parcels", data),
-//   update: (id: string, data: any) => api.put(`/parcels/${id}`, data),
-//   delete: (id: string) => api.delete(`/parcels/${id}`),
-//   getMyParcels: () => api.get("/parcels/my-parcels"),
-//   getAssignedParcels: () => api.get("/parcels/assigned"),
-//   updateStatus: (id: string, data: { status: string; notes?: string; latitude?: number; longitude?: number }) => api.post(`/parcels/${id}/status`, data),
-// };
+// ✅ Parcel, Address, Transaction, Admin APIs stay the same
 
 export const parcelApi = {
   createParcel: (data: any) => api.post("/parcels", data),
@@ -168,12 +152,12 @@ export const transactionApi = {
 
 // Admin API calls
 export const adminApi = {
-  getUsers: () => api.get("/admin/users"),
-  getUser: (id: string) => api.get(`/admin/users/${id}`),
-  updateUser: (id: string, data: any) => api.put(`/admin/users/${id}`, data),
-  getStats: () => api.get("/admin/stats"),
-  getParcelStats: () => api.get("/admin/parcel-stats"),
-  getAgents: () => api.get("/users/admin/agents"),
+  getUsers: () => api.get("/users"),
+  getUser: (id: string) => api.get(`/users/${id}`),
+  updateUser: (id: string, data: any) => api.put(`/users/${id}`, data),
+  getStats: () => api.get("/stats"),
+  getParcelStats: () => api.get("/parcel-stats"),
+  getAgents: () => api.get("/users/agents"),
 };
 
 export const userApi = {
