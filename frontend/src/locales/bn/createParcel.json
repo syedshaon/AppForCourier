@@ -1,0 +1,52 @@
+{
+  "title": "পার্সেল তৈরি করুন",
+  "headingAsCustomer": "পার্সেল পিকআপ বুক করুন",
+  "headingAsAdmin": "নতুন পার্সেল তৈরি করুন",
+  "pickupAddress": "পিকআপ ঠিকানা",
+  "deliveryAddress": "ডেলিভারি ঠিকানা",
+  "parcelDetails": "পার্সেল বিবরণ",
+  "paymentDetails": "পেমেন্ট বিবরণ",
+  "parcelSize": "পার্সেলের আকার",
+  "parcelType": "পার্সেলের ধরন",
+  "weight": "ওজন (কেজি)",
+  "pickupDate": "পিকআপ তারিখ",
+  "description": "বিবরণ",
+  "descriptionPlaceholder": "আপনার পার্সেলের বিষয়বস্তু বর্ণনা করুন...",
+  "paymentType": "পেমেন্ট ধরন",
+  "codAmount": "COD পরিমাণ",
+  "createParcel": "পার্সেল তৈরি করুন",
+  "creating": "তৈরি করা হচ্ছে...",
+  "success": "পার্সেল সফলভাবে তৈরি হয়েছে!",
+  "error": "পার্সেল তৈরি করতে ব্যর্থ",
+  "sizes": {
+    "SMALL": "ছোট",
+    "MEDIUM": "মাঝারি",
+    "LARGE": "বড়",
+    "EXTRA_LARGE": "অতিবড়"
+  },
+  "types": {
+    "DOCUMENT": "নথি",
+    "PACKAGE": "প্যাকেজ",
+    "FRAGILE": "ভঙ্গুর",
+    "ELECTRONICS": "ইলেকট্রনিক্স",
+    "CLOTHING": "পোশাক",
+    "FOOD": "খাদ্য",
+    "OTHER": "অন্যান্য"
+  },
+  "paymentTypes": {
+    "PREPAID": "প্রিপেইড",
+    "COD": "ক্যাশ অন ডেলিভারি"
+  },
+  "validation": {
+    "streetRequired": "রাস্তার নাম প্রয়োজন",
+    "cityRequired": "শহরের নাম প্রয়োজন",
+    "stateRequired": "রাজ্যের নাম প্রয়োজন",
+    "zipCodeRequired": "জিপ কোড প্রয়োজন",
+    "countryRequired": "দেশের নাম প্রয়োজন",
+    "weightMin": "ওজন কমপক্ষে 0.1kg হতে হবে",
+    "descriptionMin": "বিবরণ কমপক্ষে 10 অক্ষর হতে হবে",
+    "descriptionMax": "বিবরণ সর্বাধিক 500 অক্ষর হতে হবে",
+    "codAmountMin": "COD পরিমাণ অবশ্যই ইতিবাচক হতে হবে",
+    "pickupDateFuture": "পিকআপ তারিখ আজ বা ভবিষ্যতে হতে হবে"
+  }
+}

@@ -1,0 +1,18 @@
+{
+  "header": {
+    "title": "Rui Courier"
+  },
+  "home": "হোম",
+  "user": "ব্যবহারকারী",
+  "roles": {
+    "admin": "এডমিন",
+    "customer": "গ্রাহক",
+    "agent": "ডেলিভারি এজেন্ট"
+  },
+  "welcome": "স্বাগতম",
+  "loading": "লোড হচ্ছে...",
+  "error": "একটি ত্রুটি ঘটেছে",
+  "success": "সফল!",
+  "notFound": "পৃষ্ঠা পাওয়া যায়নি",
+  "unauthorized": "অননুমোদিত অ্যাক্সেস"
+}

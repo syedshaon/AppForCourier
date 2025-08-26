@@ -19,7 +19,7 @@ export default function ParcelRoutes() {
       <Route
         path="/create"
         element={
-          <ProtectedRoute requiredRole={"CUSTOMER"}>
+          <ProtectedRoute>
             <CreateParcelForm />
           </ProtectedRoute>
         }

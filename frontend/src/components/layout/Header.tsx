@@ -5,44 +5,41 @@ import { Button } from "../ui/button";
 import { NavigationMenu, NavigationMenuItem, NavigationMenuList } from "../ui/navigation-menu";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "../ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
-import { authApi } from "../../services/api"; // Import the authApi
-import { useState } from "react"; // Add state for loading
-import { toast } from "sonner"; // For notifications
+import { authApi } from "../../services/api";
+import { useState } from "react";
+import { toast } from "sonner";
+import { useTranslation } from "react-i18next";
+import LanguageSwitcher from "./LangSwitch";
 
 const Header = () => {
   const { user, isAuthenticated, logout } = useAuthStore();
   const navigate = useNavigate();
   const [_isLoggingOut, setIsLoggingOut] = useState(false);
+  const { t } = useTranslation(["common", "auth", "navigation"]);
 
-  // In your Header component or wherever you handle logout
   const handleLogout = async () => {
     setIsLoggingOut(true);
 
     try {
-      // Try to call the logout API
       await authApi.logout();
-      toast.success("Logged out successfully");
+      toast.success(t("auth:logout.success"));
     } catch (error: any) {
       console.error("Logout API error:", error);
-      // Even if API call fails, clear local state
-      toast.error(error.response?.data?.message || "Logout completed locally");
+      toast.error(error.response?.data?.message || t("auth:logout.error"));
     } finally {
-      // Always clear local state
       logout();
       setIsLoggingOut(false);
       navigate("/");
     }
   };
 
-  // Generate user initials for avatar
   const getUserInitials = () => {
     if (!user) return "U";
     return `${user.firstName?.charAt(0) || ""}${user.lastName?.charAt(0) || ""}`.toUpperCase() || "U";
   };
 
-  // Get user display name
   const getUserDisplayName = () => {
-    if (!user) return "User";
+    if (!user) return t("common:user");
     return `${user.firstName} ${user.lastName}`;
   };
 
@@ -51,7 +48,7 @@ const Header = () => {
       <div className="container mx-auto flex h-14 items-center">
         <div className="mr-4 hidden md:flex">
           <Link to="/" className="mr-6 flex items-center space-x-2">
-            <span className="font-bold">Rui Courier</span>
+            <span className="font-bold text-3xl">{t("common:header.title")}</span>
           </Link>
           <NavigationMenu>
             <NavigationMenuList>
@@ -60,49 +57,37 @@ const Header = () => {
                   {user?.role === "CUSTOMER" && (
                     <NavigationMenuItem>
                       <Link to="/dashboard" className="text-sm font-medium transition-colors hover:text-primary">
-                        Dashboard
+                        {t("navigation:dashboard")}
                       </Link>
                     </NavigationMenuItem>
                   )}
                   {user?.role === "ADMIN" && (
                     <NavigationMenuItem>
                       <Link to="/admin" className="text-sm font-medium transition-colors hover:text-primary">
-                        Dashboard
+                        {t("navigation:dashboard")}
                       </Link>
                     </NavigationMenuItem>
                   )}
                   {user?.role === "AGENT" && (
                     <NavigationMenuItem>
                       <Link to="/agent" className="text-sm font-medium transition-colors hover:text-primary">
-                        Agent Portal
+                        {t("navigation:agentPortal")}
                       </Link>
                     </NavigationMenuItem>
                   )}
-                  {/* <NavigationMenuItem>
-                    <Link to="/parcels" className="text-sm font-medium transition-colors hover:text-primary">
-                      Parcels
-                    </Link>
-                  </NavigationMenuItem> */}
                 </>
               )}
             </NavigationMenuList>
           </NavigationMenu>
         </div>
 
-        <div className="flex flex-1 items-center justify-between space-x-2 md:justify-end">
-          <div className="w-full flex-1 md:w-auto md:flex-none">{/* Search bar could go here */}</div>
-          <nav className="flex items-center space-x-2 ">
+        <div className="flex mr-5 flex-1 items-center justify-between space-x-2 md:justify-end">
+          <div className="w-full flex-1 md:w-auto md:flex-none"></div>
+          <nav className="flex items-center space-x-2">
             {isAuthenticated ? (
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button
-                    variant="ghost"
-                    className="relative h-8 w-8 rounded-full cursor-pointer
-                  
-                  
-                  
-                  "
-                  >
+                  <Button variant="ghost" className="relative h-8 w-8 rounded-full cursor-pointer">
                     <Avatar className="h-8 w-8">
                       <AvatarImage src="/avatars/placeholder.jpg" alt={getUserDisplayName()} />
                       <AvatarFallback>{getUserInitials()}</AvatarFallback>
@@ -114,30 +99,30 @@ const Header = () => {
                     <div className="flex flex-col space-y-1">
                       <p className="text-sm font-medium leading-none">{getUserDisplayName()}</p>
                       <p className="text-xs leading-none text-muted-foreground">{user?.email}</p>
-                      <p className="text-xs leading-none text-muted-foreground capitalize">{user?.role?.toLowerCase()}</p>
+                      <p className="text-xs leading-none text-muted-foreground capitalize">{t(`common:roles.${user?.role?.toLowerCase()}`)}</p>
                     </div>
                   </DropdownMenuLabel>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem asChild>
-                    <Link to="/profile">Profile</Link>
+                    <Link to="/profile">{t("navigation:profile")}</Link>
                   </DropdownMenuItem>
-
                   <DropdownMenuSeparator />
-                  <DropdownMenuItem onClick={handleLogout}>Log out</DropdownMenuItem>
+                  <DropdownMenuItem onClick={handleLogout}>{t("auth:logout.button")}</DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
             ) : (
               <>
                 <Button variant="ghost" asChild>
-                  <Link to="/login">Login</Link>
+                  <Link to="/login">{t("auth:login")}</Link>
                 </Button>
                 <Button asChild>
-                  <Link to="/register">Register</Link>
+                  <Link to="/register">{t("auth:register")}</Link>
                 </Button>
               </>
             )}
           </nav>
         </div>
+        <LanguageSwitcher />
       </div>
     </header>
   );

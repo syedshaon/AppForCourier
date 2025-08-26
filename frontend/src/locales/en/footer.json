@@ -1,0 +1,23 @@
+{
+  "description": "Fast and reliable delivery services for all your needs.",
+  "services": {
+    "title": "Services",
+    "allServices": "All Services",
+    "pricing": "Pricing",
+    "expressDelivery": "Express Delivery",
+    "parcelTracking": "Parcel Tracking"
+  },
+  "company": {
+    "title": "Company",
+    "careers": "Careers",
+    "blog": "Blog"
+  },
+  "legal": {
+    "title": "Legal",
+    "terms": "Terms & Conditions",
+    "privacy": "Privacy Policy",
+    "cookies": "Cookie Policy",
+    "security": "Security"
+  },
+  "copyright": "© {{year}} Rui Courier. All rights reserved."
+}

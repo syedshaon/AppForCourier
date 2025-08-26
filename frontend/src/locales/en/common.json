@@ -1,0 +1,18 @@
+{
+  "header": {
+    "title": "Rui Courier"
+  },
+  "home": "Home",
+  "user": "User",
+  "roles": {
+    "admin": "Administrator",
+    "customer": "Customer",
+    "agent": "Delivery Agent"
+  },
+  "welcome": "Welcome",
+  "loading": "Loading...",
+  "error": "An error occurred",
+  "success": "Success!",
+  "notFound": "Page not found",
+  "unauthorized": "Unauthorized access"
+}

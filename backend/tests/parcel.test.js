@@ -16,17 +16,17 @@ describe("Parcel Endpoints", () => {
     await prisma.address.deleteMany({});
     await prisma.user.deleteMany({
       where: {
-        OR: [{ email: "customer@test.com" }, { email: "agent@test.com" }, { email: "admin@test.com" }],
+        OR: [{ email: "customer11@test.com" }, { email: "agent11@test.com" }, { email: "admin11@test.com" }],
       },
     });
 
     // Create test users
     const customerRes = await request(app).post("/api/auth/register").send({
-      email: "customer@test.com",
+      email: "customer11@test.com",
       password: "password123",
       firstName: "John",
       lastName: "Customer",
-      phoneNumber: "+8801712345678",
+      phoneNumber: "+8801762345678",
       address: "123 Customer St, Dhaka",
       role: "CUSTOMER",
     });
@@ -34,11 +34,11 @@ describe("Parcel Endpoints", () => {
     customerId = customerRes.body.data.user.id;
 
     const agentRes = await request(app).post("/api/auth/register").send({
-      email: "agent@test.com",
+      email: "agent11@test.com",
       password: "password123",
       firstName: "Jane",
       lastName: "Agent",
-      phoneNumber: "+8801712345679",
+      phoneNumber: "+8801752345679",
       address: "456 Agent Ave, Dhaka",
       role: "AGENT",
     });
@@ -46,11 +46,11 @@ describe("Parcel Endpoints", () => {
     agentId = agentRes.body.data.user.id;
 
     const adminRes = await request(app).post("/api/auth/register").send({
-      email: "admin@test.com",
+      email: "admin11@test.com",
       password: "password123",
       firstName: "Admin",
       lastName: "User",
-      phoneNumber: "+8801712345680",
+      phoneNumber: "+8801772345680",
       address: "789 Admin Blvd, Dhaka",
       role: "ADMIN",
     });
@@ -60,7 +60,7 @@ describe("Parcel Endpoints", () => {
     // Manually verify all test users
     await prisma.user.updateMany({
       where: {
-        OR: [{ email: "customer@test.com" }, { email: "agent@test.com" }, { email: "admin@test.com" }],
+        OR: [{ email: "customer11@test.com" }, { email: "agent11@test.com" }, { email: "admin11@test.com" }],
       },
       data: {
         isEmailVerified: true,
@@ -71,19 +71,19 @@ describe("Parcel Endpoints", () => {
 
     // Login all test users to get tokens
     const customerLogin = await request(app).post("/api/auth/login").send({
-      email: "customer@test.com",
+      email: "customer11@test.com",
       password: "password123",
     });
     customerToken = customerLogin.body.data.token;
 
     const agentLogin = await request(app).post("/api/auth/login").send({
-      email: "agent@test.com",
+      email: "agent11@test.com",
       password: "password123",
     });
     agentToken = agentLogin.body.data.token;
 
     const adminLogin = await request(app).post("/api/auth/login").send({
-      email: "admin@test.com",
+      email: "admin11@test.com",
       password: "password123",
     });
     adminToken = adminLogin.body.data.token;
@@ -95,7 +95,7 @@ describe("Parcel Endpoints", () => {
     await prisma.address.deleteMany({});
     await prisma.user.deleteMany({
       where: {
-        OR: [{ email: "customer@test.com" }, { email: "agent@test.com" }, { email: "admin@test.com" }],
+        OR: [{ email: "customer11@test.com" }, { email: "agent11@test.com" }, { email: "admin11@test.com" }],
       },
     });
     await prisma.$disconnect();
@@ -116,6 +116,7 @@ describe("Parcel Endpoints", () => {
           zipCode: "1000",
           latitude: 23.8103,
           longitude: 90.4125,
+          phoneNumber: "+8801762345678", // Add this
         },
         deliveryAddress: {
           street: "456 Delivery Avenue",
@@ -124,6 +125,7 @@ describe("Parcel Endpoints", () => {
           zipCode: "4000",
           latitude: 22.3569,
           longitude: 91.7832,
+          phoneNumber: "+8801752345679", // Add this
         },
         parcelSize: "MEDIUM",
         parcelType: "PACKAGE",
@@ -152,6 +154,10 @@ describe("Parcel Endpoints", () => {
       const invalidData = {
         pickupAddress: {
           street: "123 Test St",
+          city: "Dhaka",
+          state: "Dhaka Division",
+          zipCode: "1000",
+          phoneNumber: "+8801762345678", // Add this
           // Missing required fields
         },
         parcelSize: "INVALID_SIZE",
@@ -171,12 +177,14 @@ describe("Parcel Endpoints", () => {
           city: "Dhaka",
           state: "Dhaka Division",
           zipCode: "1000",
+          phoneNumber: "+8801762345678", // Add this
         },
         deliveryAddress: {
           street: "456 Delivery Avenue",
           city: "Chittagong",
           state: "Chittagong Division",
           zipCode: "4000",
+          phoneNumber: "+8801752345679", // Add this
         },
         parcelSize: "SMALL",
         parcelType: "DOCUMENT",
@@ -197,12 +205,14 @@ describe("Parcel Endpoints", () => {
           city: "Dhaka",
           state: "Dhaka Division",
           zipCode: "1000",
+          phoneNumber: "+8801762345678", // Add this
         },
         deliveryAddress: {
           street: "456 Test Ave",
           city: "Dhaka",
           state: "Dhaka Division",
           zipCode: "1000",
+          phoneNumber: "+8801752345679", // Add this
         },
         parcelSize: "SMALL",
         parcelType: "DOCUMENT",
@@ -222,12 +232,14 @@ describe("Parcel Endpoints", () => {
           city: "Dhaka",
           state: "Dhaka Division",
           zipCode: "1000",
+          phoneNumber: "+8801762345678", // Add this
         },
         deliveryAddress: {
           street: "456 Test Ave",
           city: "Dhaka",
           state: "Dhaka Division",
           zipCode: "1000",
+          phoneNumber: "+8801752345679", // Add this
         },
         parcelSize: "SMALL",
         parcelType: "DOCUMENT",
@@ -413,25 +425,47 @@ describe("Parcel Endpoints", () => {
     });
 
     test("PATCH /api/parcels/:id/status - should reject unassigned agent", async () => {
-      // Create another agent
-      await request(app).post("/api/auth/register").send({
+      // Clean up any existing agent2 first
+      await prisma.user.deleteMany({
+        where: {
+          OR: [{ email: "agent2@test.com" }, { phoneNumber: "+8801712345682" }],
+        },
+      });
+
+      // Create another agent with unique credentials
+      const registerRes = await request(app).post("/api/auth/register").send({
         email: "agent2@test.com",
         password: "password123",
         firstName: "Bob",
         lastName: "Agent2",
-        phoneNumber: "+8801712345682",
+        phoneNumber: "+8801712345682", // Make sure this is unique
         role: "AGENT",
       });
 
+      if (registerRes.statusCode !== 201) {
+        console.error("Registration failed:", registerRes.body);
+        throw new Error("Agent registration failed");
+      }
+
+      // Manually verify the agent
       await prisma.user.update({
         where: { email: "agent2@test.com" },
-        data: { isEmailVerified: true },
+        data: {
+          isEmailVerified: true,
+          emailVerifyToken: null,
+          emailVerifyExpires: null,
+        },
       });
 
       const loginRes = await request(app).post("/api/auth/login").send({
         email: "agent2@test.com",
         password: "password123",
       });
+
+      if (loginRes.statusCode !== 200) {
+        console.error("Login failed:", loginRes.body);
+        throw new Error("Agent login failed");
+      }
 
       const agent2Token = loginRes.body.data.token;
 
@@ -470,12 +504,14 @@ describe("Parcel Endpoints", () => {
           city: "Dhaka",
           state: "Dhaka Division",
           zipCode: "1000",
+          phoneNumber: "+8801762345678", // Add this
         },
         deliveryAddress: {
           street: "Delete Test Avenue",
           city: "Dhaka",
           state: "Dhaka Division",
           zipCode: "1000",
+          phoneNumber: "+8801752345679", // Add this
         },
         parcelSize: "SMALL",
         parcelType: "DOCUMENT",

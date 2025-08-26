@@ -152,8 +152,8 @@ export const sendParcelStatusUpdateEmail = async (parcelData, newStatus, notes =
             <div style="background: white; padding: 20px; border-radius: 8px; margin: 20px 0; border-left: 4px solid ${statusColor};">
               <h3 style="margin-top: 0; color: #1f2937;">Tracking Details</h3>
               <p><strong>Tracking Number:</strong> ${trackingNumber}</p>
-              <p><strong>From:</strong> ${pickupAddress.city}, ${pickupAddress.state}</p>
-              <p><strong>To:</strong> ${deliveryAddress.city}, ${deliveryAddress.state}</p>
+              <p><strong>From:</strong> ${pickupAddress.city}, ${pickupAddress.state}, ${pickupAddress.phoneNumber}</p>
+              <p><strong>To:</strong> ${deliveryAddress.city}, ${deliveryAddress.state}, ${deliveryAddress.phoneNumber}</p>
               ${notes ? `<p><strong>Notes:</strong> ${notes}</p>` : ""}
             </div>
 
@@ -215,13 +215,13 @@ export const sendAgentAssignmentEmail = async (agentData, parcelData) => {
 
             <div style="background: white; padding: 20px; border-radius: 8px; margin: 20px 0; border-left: 4px solid #10b981;">
               <h3 style="margin-top: 0; color: #1f2937;">Pickup Address</h3>
-              <p>${pickupAddress.street}</p>
+              <p>${pickupAddress.street} , ${pickupAddress.phoneNumber}</p>
               <p>${pickupAddress.city}, ${pickupAddress.state} ${pickupAddress.zipCode}</p>
             </div>
 
             <div style="background: white; padding: 20px; border-radius: 8px; margin: 20px 0; border-left: 4px solid #f59e0b;">
               <h3 style="margin-top: 0; color: #1f2937;">Delivery Address</h3>
-              <p>${deliveryAddress.street}</p>
+              <p>${deliveryAddress.street}, ${deliveryAddress.phoneNumber}</p>
               <p>${deliveryAddress.city}, ${deliveryAddress.state} ${deliveryAddress.zipCode}</p>
             </div>
 
@@ -274,8 +274,8 @@ export const sendParcelCreationEmail = async (parcelData) => {
             <div style="background: white; padding: 20px; border-radius: 8px; margin: 20px 0; border-left: 4px solid #22c55e;">
               <h3 style="margin-top: 0; color: #1f2937;">Booking Details</h3>
               <p><strong>Tracking Number:</strong> ${trackingNumber}</p>
-              <p><strong>From:</strong> ${pickupAddress.city}, ${pickupAddress.state}</p>
-              <p><strong>To:</strong> ${deliveryAddress.city}, ${deliveryAddress.state}</p>
+              <p><strong>From:</strong> ${pickupAddress.city}, ${pickupAddress.state}, ${pickupAddress.phoneNumber}</p>
+              <p><strong>To:</strong> ${deliveryAddress.city}, ${deliveryAddress.state}, ${deliveryAddress.phoneNumber}</p>
               <p><strong>Shipping Cost:</strong> ৳${shippingCost}</p>
               <p><strong>Expected Delivery:</strong> ${new Date(expectedDelivery).toLocaleDateString()}</p>
             </div>

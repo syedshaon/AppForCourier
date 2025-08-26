@@ -46,6 +46,7 @@ interface ParcelDetail {
     state: string;
     zipCode: string;
     country: string;
+    phoneNumber: string;
   };
   deliveryAddress: {
     street: string;
@@ -53,6 +54,7 @@ interface ParcelDetail {
     state: string;
     zipCode: string;
     country: string;
+    phoneNumber: string;
   };
   statusUpdates: Array<{
     id: string;
@@ -188,6 +190,7 @@ export default function ParcelDetail() {
                   <p>
                     {parcel.pickupAddress.zipCode}, {parcel.pickupAddress.country}
                   </p>
+                  <p>{parcel.pickupAddress.phoneNumber}</p>
                 </div>
               </div>
 
@@ -203,6 +206,7 @@ export default function ParcelDetail() {
                     <p>
                       {parcel.deliveryAddress.zipCode}, {parcel.deliveryAddress.country}
                     </p>
+                    <p>{parcel.deliveryAddress.phoneNumber}</p>
                   </div>
                   {showDirectionIcon && (
                     <button onClick={() => setShowDirectionsModal(true)} className="p-1 ml-4 text-blue-600 hover:text-blue-800 transition-colors" title="Get directions">

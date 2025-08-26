@@ -1,0 +1,24 @@
+{
+  "pageTitle": "Page Not Found",
+  "title": "404",
+  "heading": "Page Not Found",
+  "description": "Oops! It seems like the page you're looking for has been moved, deleted, or never existed.",
+
+  "reasonsTitle": "What could have happened?",
+  "reasonsDescription": "Common reasons you might see this page",
+  "reasons": ["The page may have been moved to a new location", "The URL might have a typo or incorrect address", "The content may have been temporarily removed", "You might not have permission to access this page"],
+
+  "helpTitle": "Need help?",
+  "helpDescription": "We're here to assist you",
+  "helpText": "If you believe this is an error or need assistance finding what you're looking for, our support team is ready to help.",
+
+  "goHome": "Go Home",
+  "goBack": "Go Back",
+  "contactSupport": "Contact Support",
+
+  "popularPages": "Popular Pages",
+  "services": "Services",
+  "pricing": "Pricing",
+  "contact": "Contact",
+  "login": "Login"
+}

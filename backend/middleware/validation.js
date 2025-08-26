@@ -131,6 +131,13 @@ export const parcelSchema = Joi.object({
     }),
     latitude: Joi.number().min(-90).max(90).optional(),
     longitude: Joi.number().min(-180).max(180).optional(),
+    phoneNumber: Joi.string()
+      .pattern(/^[\+]?[0-9\s\-\(\)]{10,15}$/)
+      .required()
+      .messages({
+        "string.pattern.base": "Please provide a valid phone number for pickup address",
+        "any.required": "Pickup phone number is required",
+      }),
   }).required(),
   deliveryAddress: Joi.object({
     street: Joi.string().required().messages({
@@ -147,6 +154,13 @@ export const parcelSchema = Joi.object({
     }),
     latitude: Joi.number().min(-90).max(90).optional(),
     longitude: Joi.number().min(-180).max(180).optional(),
+    phoneNumber: Joi.string()
+      .pattern(/^[\+]?[0-9\s\-\(\)]{10,15}$/)
+      .required()
+      .messages({
+        "string.pattern.base": "Please provide a valid phone number for pickup address",
+        "any.required": "Pickup phone number is required",
+      }),
   }).required(),
   parcelSize: Joi.string().valid("SMALL", "MEDIUM", "LARGE", "EXTRA_LARGE").required().messages({
     "any.only": "Parcel size must be one of: SMALL, MEDIUM, LARGE, EXTRA_LARGE",

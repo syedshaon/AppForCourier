@@ -98,6 +98,7 @@ async function main() {
       country: "Bangladesh",
       latitude: 22.8456,
       longitude: 89.5403,
+      phoneNumber: "+8801712345678",
     },
   });
 
@@ -110,6 +111,7 @@ async function main() {
       country: "Bangladesh",
       latitude: 23.8103,
       longitude: 90.4125,
+      phoneNumber: "+8801712345678",
     },
   });
 
@@ -122,6 +124,7 @@ async function main() {
       country: "Bangladesh",
       latitude: 22.3569,
       longitude: 91.7832,
+      phoneNumber: "+8801712345678",
     },
   });
 
@@ -134,6 +137,7 @@ async function main() {
       country: "Bangladesh",
       latitude: 24.8949,
       longitude: 91.8687,
+      phoneNumber: "+8801712345678",
     },
   });
 

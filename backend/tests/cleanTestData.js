@@ -1,4 +1,4 @@
-// scripts/cleanTestData.js
+// tests/cleanTestData.js
 import { PrismaClient } from "@prisma/client";
 import dotenv from "dotenv";
 

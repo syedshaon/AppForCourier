@@ -3,6 +3,7 @@ import { createRoot } from "react-dom/client";
 import { ThemeProvider } from "@/components/theme-provider";
 import "./index.css";
 import App from "./App.tsx";
+import "./i18n.ts";
 import { Toaster } from "@/components/ui/sonner";
 import { SocketProvider } from "./store/SocketContext";
 

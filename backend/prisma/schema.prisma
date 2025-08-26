@@ -101,6 +101,7 @@ model Address {
   country   String @default("Bangladesh")
   latitude  Float?
   longitude Float?
+  phoneNumber String @default("01715143151") // Default phone number
 
   // Relations
   pickupParcels   Parcel[] @relation("PickupAddress")

@@ -1,0 +1,35 @@
+{
+  "title": "Contact Us",
+  "description": "Get in touch with our team. We're here to help you with all your delivery needs.",
+  "form": {
+    "title": "Send us a Message",
+    "description": "Fill out the form and we'll get back to you as soon as possible",
+    "nameLabel": "Full Name",
+    "namePlaceholder": "Your name",
+    "emailLabel": "Email",
+    "emailPlaceholder": "your.email@example.com",
+    "subjectLabel": "Subject",
+    "subjectPlaceholder": "What is this regarding?",
+    "messageLabel": "Message",
+    "messagePlaceholder": "Your message...",
+    "sendButton": "Send Message",
+    "sending": "Sending...",
+    "successMessage": "Message sent! We will get back to you as soon as possible."
+  },
+  "info": {
+    "addressTitle": "Address",
+    "addressLine1": "123 Courier Street",
+    "addressLine2": "Delivery City, DC 12345",
+    "phoneTitle": "Phone",
+    "phoneNumber": "(123) 456-7890",
+    "emailTitle": "Email",
+    "emailAddress": "info@ruicourier.com"
+  },
+  "emergency": {
+    "title": "Emergency Support",
+    "description": "For urgent delivery issues outside business hours",
+    "info": "Call our 24/7 emergency support line for urgent delivery issues:",
+    "phoneNumber": "(123) 555-EMERGENCY",
+    "note": "Available for time-sensitive delivery emergencies only"
+  }
+}

@@ -11,6 +11,7 @@ const sampleAddresses = {
     zipCode: "1000",
     latitude: 23.8103,
     longitude: 90.4125,
+    phoneNumber: "+8801712345678",
   },
   chittagong: {
     street: "456 Test Ave",
@@ -19,6 +20,7 @@ const sampleAddresses = {
     zipCode: "4000",
     latitude: 22.3569,
     longitude: 91.7832,
+    phoneNumber: "+8801712345679",
   },
   sylhet: {
     street: "789 Test Blvd",
@@ -27,6 +29,7 @@ const sampleAddresses = {
     zipCode: "3100",
     latitude: 24.8949,
     longitude: 91.8687,
+    phoneNumber: "+8801712345680",
   },
 };
 

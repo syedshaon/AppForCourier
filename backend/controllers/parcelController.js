@@ -37,6 +37,7 @@ export const createParcel = async (req, res) => {
           country: pickupAddress.country || "Bangladesh",
           latitude: pickupAddress.latitude,
           longitude: pickupAddress.longitude,
+          phoneNumber: pickupAddress.phoneNumber,
         },
       });
 
@@ -50,6 +51,7 @@ export const createParcel = async (req, res) => {
           country: deliveryAddress.country || "Bangladesh",
           latitude: deliveryAddress.latitude,
           longitude: deliveryAddress.longitude,
+          phoneNumber: deliveryAddress.phoneNumber,
         },
       });
 

@@ -21,7 +21,7 @@
     "test:all": "cross-env NODE_ENV=test jest --runInBand --testTimeout=20000",
     "test:parcel-full": "cross-env NODE_ENV=test jest tests/parcel.test.js tests/utils.test.js tests/integration.test.js --runInBand --testTimeout=20000",
     "test:admin": "jest tests/admin.test.js --forceExit --detectOpenHandles",
-    "test:clean": "cross-env NODE_ENV=test node scripts/cleanTestData.js"
+    "test:clean": "cross-env NODE_ENV=test node tests/cleanTestData.js"
   },
   "dependencies": {
     "@prisma/client": "^5.22.0",

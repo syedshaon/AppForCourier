@@ -1,0 +1,30 @@
+{
+  "hero": {
+    "title": "Fast & Reliable Courier Services",
+    "description": "Rui Courier delivers your parcels with speed and precision. Track your shipments in real-time and experience the best delivery service.",
+    "dashboardButton": "Go to Dashboard",
+    "getStartedButton": "Get Started",
+    "imageAlt": "Courier delivery service illustration"
+  },
+  "features": {
+    "title": "Why Choose Rui Courier",
+    "description": "We provide the best delivery experience with our advanced tracking and reliable service.",
+    "fastDelivery": {
+      "title": "Fast Delivery",
+      "description": "Get your parcels delivered quickly with our efficient delivery network."
+    },
+    "realTimeTracking": {
+      "title": "Real-time Tracking",
+      "description": "Track your parcels in real-time with our advanced tracking system."
+    },
+    "secureHandling": {
+      "title": "Secure Handling",
+      "description": "Your parcels are handled with care and security throughout the delivery process."
+    }
+  },
+  "cta": {
+    "title": "Ready to Ship?",
+    "description": "Create an account today and experience the best courier service.",
+    "signUpButton": "Sign Up Now"
+  }
+}

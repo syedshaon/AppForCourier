@@ -1,0 +1,61 @@
+{
+  "title": "Create Parcel",
+  "headingAsCustomer": "Book a parcel pickup",
+  "headingAsAdmin": "Create a new parcel",
+
+  "pickupAddress": "Pickup Address",
+  "deliveryAddress": "Delivery Address",
+  "parcelDetails": "Parcel Details",
+  "paymentDetails": "Payment Details",
+
+  "parcelSize": "Parcel Size",
+  "parcelType": "Parcel Type",
+  "weight": "Weight (kg)",
+  "pickupDate": "Pickup Date",
+  "description": "Description",
+  "descriptionPlaceholder": "Describe your parcel contents...",
+
+  "paymentType": "Payment Type",
+  "codAmount": "COD Amount",
+
+  "createParcel": "Create Parcel",
+  "creating": "Creating...",
+
+  "success": "Parcel created successfully!",
+  "error": "Failed to create parcel",
+
+  "sizes": {
+    "SMALL": "Small",
+    "MEDIUM": "Medium",
+    "LARGE": "Large",
+    "EXTRA_LARGE": "Extra Large"
+  },
+
+  "types": {
+    "DOCUMENT": "Document",
+    "PACKAGE": "Package",
+    "FRAGILE": "Fragile",
+    "ELECTRONICS": "Electronics",
+    "CLOTHING": "Clothing",
+    "FOOD": "Food",
+    "OTHER": "Other"
+  },
+
+  "paymentTypes": {
+    "PREPAID": "Prepaid",
+    "COD": "Cash on Delivery"
+  },
+
+  "validation": {
+    "streetRequired": "Street is required",
+    "cityRequired": "City is required",
+    "stateRequired": "State is required",
+    "zipCodeRequired": "Zip code is required",
+    "countryRequired": "Country is required",
+    "weightMin": "Weight must be at least 0.1kg",
+    "descriptionMin": "Description must be at least 10 characters",
+    "descriptionMax": "Description must be at most 500 characters",
+    "codAmountMin": "COD amount must be positive",
+    "pickupDateFuture": "Pickup date must be today or in the future"
+  }
+}
