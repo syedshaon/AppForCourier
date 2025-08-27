@@ -44,11 +44,14 @@ const Header = () => {
   };
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+    <header
+      className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 px-2
+    "
+    >
       <div className="container mx-auto flex h-14 items-center">
-        <div className="mr-4 hidden md:flex">
+        <div className="mr-4 flex">
           <Link to="/" className="mr-6 flex items-center space-x-2">
-            <span className="font-bold text-3xl">{t("common:header.title")}</span>
+            <span className="font-bold text-xl sm:text-3xl">{t("common:header.title")}</span>
           </Link>
           <NavigationMenu>
             <NavigationMenuList>
@@ -115,7 +118,7 @@ const Header = () => {
                 <Button variant="ghost" asChild>
                   <Link to="/login">{t("auth:login")}</Link>
                 </Button>
-                <Button asChild>
+                <Button className="hidden sm:block" asChild>
                   <Link to="/register">{t("auth:register")}</Link>
                 </Button>
               </>

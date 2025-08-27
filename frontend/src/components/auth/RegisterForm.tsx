@@ -124,7 +124,7 @@ const RegisterForm = () => {
   usePageTitle("Register");
 
   return (
-    <div className="flex items-center justify-center min-h-[70vh] bg-muted">
+    <div className="flex items-center justify-center m-6 min-h-[70vh]  ">
       <Card className="mx-auto max-w-md w-full py-8">
         <CardHeader>
           <CardTitle className="text-2xl">Create an account</CardTitle>

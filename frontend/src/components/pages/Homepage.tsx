@@ -16,7 +16,7 @@ const Homepage = () => {
   return (
     <div className="flex flex-col min-h-screen">
       {/* Hero Section */}
-      <section className="w-full py-12 md:py-24 lg:py-32 xl:py-48 bg-gradient-to-r from-blue-50 to-indigo-50">
+      <section className="w-full h-screen md:h-auto flex flex-col justify-center   md:justify-start py-12 md:py-24 lg:py-32 xl:py-48 bg-gradient-to-r from-blue-50 to-indigo-50">
         <div className="container mx-auto px-4 md:px-6">
           <div className="grid gap-6 lg:grid-cols-[1fr_400px] lg:gap-12 xl:grid-cols-[1fr_600px]">
             <div className="flex flex-col justify-center space-y-4">
@@ -31,12 +31,12 @@ const Homepage = () => {
                   </Button>
                 ) : (
                   <>
-                    <Button asChild size="lg">
-                      <Link to="/register">{t("home:hero.getStartedButton")}</Link>
+                    <Button variant="secondary" asChild size="lg">
+                      <Link to="/login">{t("home:hero.getStartedButton")}</Link>
                     </Button>
-                    <Button variant="outline" asChild size="lg">
+                    {/* <Button variant="secondary" asChild size="lg">
                       <Link to="/login">{t("auth:login")}</Link>
-                    </Button>
+                    </Button> */}
                   </>
                 )}
               </div>

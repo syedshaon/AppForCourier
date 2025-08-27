@@ -2,6 +2,8 @@
 
 A full-stack PERN application for managing courier services with real-time tracking, role-based access, and comprehensive parcel management features.
 
+## Backend of the live site https://app-for-courier.vercel.app/ is hosted on free hosting platform so it may take some time to get interative.
+
 ## 🚀 Features
 
 ### Customer Features
