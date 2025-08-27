@@ -38,6 +38,8 @@ import TrackParcel from "./components/parcels/TrackParcel";
 import { useAuthStore } from "./store/authStore";
 import { Loader2 } from "lucide-react";
 
+import BackendNoticeModal from "@/components/layout/FreeHostingNotice";
+
 function App() {
   const { isAuthenticated: _isAuthenticated, initializeAuth } = useAuthStore();
   const [isInitializing, setIsInitializing] = useState(true);
@@ -139,6 +141,7 @@ function App() {
           </Routes>
         </main>
         <Footer />
+        <BackendNoticeModal />
       </div>
     </Router>
   );
